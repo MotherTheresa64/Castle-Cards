@@ -8,13 +8,11 @@ Write-Host "=== Castle Cards Update ===" -ForegroundColor Cyan
 Write-Host "Project: $projectRoot"
 Write-Host ""
 
-# Godot may rewrite project.godot locally. GitHub is the source of truth for that file.
+# Godot may rewrite project.godot locally. GitHub remains the source of truth.
 if (-not (git diff --quiet -- project.godot)) {
     Write-Host "Restoring local project.godot to repository version..." -ForegroundColor Yellow
     git restore -- project.godot
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to restore project.godot."
-    }
+    if ($LASTEXITCODE -ne 0) { throw "Failed to restore project.godot." }
 }
 
 Write-Host "Pulling latest repository changes..." -ForegroundColor Yellow
@@ -26,7 +24,8 @@ if ($LASTEXITCODE -ne 0) {
 $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_assets.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
@@ -87,11 +86,14 @@ $expectedAssets = @(
     "Models\Tavern\Furniture\small_table.glb",
     "Models\Tavern\Lighting\chandelier.glb",
     "Models\Tavern\Lighting\brazier.glb",
-    "Models\Opponent\seated_opponent.glb"
+    "Models\Opponent\seated_opponent.glb",
+    "Models\Hero\tavern_room_hero.glb",
+    "Models\Hero\battlefield_terrain_hero.glb",
+    "Models\Hero\castle_hero.glb",
+    "Models\Hero\opponent_hero.glb"
 )
 
 $needsAssets = -not (Test-Path $assetStamp)
-
 if (-not $needsAssets) {
     foreach ($asset in $expectedAssets) {
         if (-not (Test-Path (Join-Path $projectRoot $asset))) {
@@ -116,9 +118,7 @@ if ($needsAssets) {
 
     $blender = $null
     $blenderCommand = Get-Command blender.exe -ErrorAction SilentlyContinue
-    if ($blenderCommand) {
-        $blender = $blenderCommand.Source
-    }
+    if ($blenderCommand) { $blender = $blenderCommand.Source }
 
     if (-not $blender) {
         $blenderRoot = Join-Path $env:ProgramFiles "Blender Foundation"
@@ -129,28 +129,18 @@ if ($needsAssets) {
         }
     }
 
-    if (-not $blender) {
-        throw "Blender could not be found. Install Blender or add blender.exe to PATH."
-    }
-
+    if (-not $blender) { throw "Blender could not be found. Install Blender or add blender.exe to PATH." }
     Write-Host "Blender: $blender" -ForegroundColor DarkGray
 
     foreach ($script in $assetScripts) {
-        if (-not (Test-Path $script)) {
-            throw "Missing Blender generator: $script"
-        }
-
+        if (-not (Test-Path $script)) { throw "Missing Blender generator: $script" }
         Write-Host "Running $(Split-Path $script -Leaf)..." -ForegroundColor DarkGray
         & $blender --background --python $script
-        if ($LASTEXITCODE -ne 0) {
-            throw "Blender asset generation failed while running $script"
-        }
+        if ($LASTEXITCODE -ne 0) { throw "Blender asset generation failed while running $script" }
     }
 
     foreach ($asset in $expectedAssets) {
-        if (-not (Test-Path (Join-Path $projectRoot $asset))) {
-            throw "Expected generated asset is missing: $asset"
-        }
+        if (-not (Test-Path (Join-Path $projectRoot $asset))) { throw "Expected generated asset is missing: $asset" }
     }
 
     New-Item -Path $assetStamp -ItemType File -Force | Out-Null
@@ -164,11 +154,9 @@ else {
 Write-Host ""
 Write-Host "Building CastleCards.csproj..." -ForegroundColor Yellow
 dotnet build .\CastleCards.csproj
-if ($LASTEXITCODE -ne 0) {
-    throw "dotnet build failed."
-}
+if ($LASTEXITCODE -ne 0) { throw "dotnet build failed." }
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded and all gameplay/detail assets are current." -ForegroundColor Green
+Write-Host "C# build succeeded and the hero-quality art set is current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green
