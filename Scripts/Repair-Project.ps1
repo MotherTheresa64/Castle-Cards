@@ -10,10 +10,21 @@ Write-Host ""
 Write-Host "IMPORTANT: Godot should be closed while this repair runs." -ForegroundColor Yellow
 Write-Host ""
 
+# Godot may touch project.godot locally when opening/importing the project.
+# For this repo, GitHub is the source of truth, so discard only that generated/local change
+# before pulling. Other tracked local edits are intentionally left alone.
+if (-not (git diff --quiet -- project.godot)) {
+    Write-Host "Restoring local project.godot to repository version..." -ForegroundColor Yellow
+    git restore -- project.godot
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to restore project.godot."
+    }
+}
+
 Write-Host "Pulling latest repository changes..." -ForegroundColor Yellow
 git pull --ff-only
 if ($LASTEXITCODE -ne 0) {
-    throw "git pull failed. Resolve the Git error before continuing."
+    throw "git pull failed. Resolve any remaining local Git changes before continuing."
 }
 
 $foldersToRemove = @(
