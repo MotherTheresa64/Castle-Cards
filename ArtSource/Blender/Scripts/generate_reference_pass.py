@@ -34,30 +34,38 @@ def material(name, rgb, roughness=.92, metallic=0.0, emission=None, emission_str
     return mat
 
 
-# Reference-pass palette: warm, desaturated, readable in the dark tavern lighting.
-STONE_D = material("REF_StoneDark", (.115, .120, .118), .98)
-STONE = material("REF_Stone", (.285, .278, .255), .98)
-STONE_L = material("REF_StoneLight", (.405, .382, .335), .96)
-STONE_MOSS = material("REF_StoneMoss", (.155, .190, .120), .99)
-WOOD_D = material("REF_WoodDark", (.050, .018, .009), .95)
-WOOD = material("REF_Wood", (.150, .054, .018), .92)
-WOOD_L = material("REF_WoodLight", (.245, .100, .034), .88)
-IRON = material("REF_Iron", (.038, .043, .050), .42, .84)
-STEEL = material("REF_Steel", (.285, .300, .305), .38, .72)
-BRONZE = material("REF_Bronze", (.34, .175, .045), .46, .58)
-BLUE = material("REF_BlueCloth", (.030, .080, .250), .98)
-RED = material("REF_RedCloth", (.285, .025, .020), .98)
-CLOTH = material("REF_Cloak", (.026, .025, .033), .99)
-TUNIC = material("REF_Tunic", (.095, .085, .075), .98)
-LEATHER = material("REF_Leather", (.120, .038, .015), .93)
-LEATHER_L = material("REF_LeatherLight", (.220, .082, .026), .90)
-SKIN = material("REF_Skin", (.50, .295, .185), .88)
-SKIN_SHADOW = material("REF_SkinShadow", (.36, .185, .115), .90)
-HAIR = material("REF_Brunette", (.050, .020, .010), .95)
-HAIR_L = material("REF_BrunetteLight", (.105, .042, .018), .94)
-BONE = material("REF_Bone", (.63, .56, .43), .96)
-BLACK = material("REF_Black", (.008, .009, .011), .99)
-FIRE = material("REF_Fire", (1.0, .12, .008), .18, 0.0, (1.0, .07, .003), 8.0)
+# Cohesive reference palette. Values are intentionally lighter than the old pass so
+# shape detail survives the cinematic tavern lighting.
+STONE_D = material("REF2_StoneDark", (.15, .155, .150), .98)
+STONE = material("REF2_Stone", (.34, .33, .30), .97)
+STONE_L = material("REF2_StoneLight", (.48, .45, .39), .95)
+MOSS = material("REF2_Moss", (.14, .20, .105), .99)
+WOOD_D = material("REF2_WoodDark", (.060, .025, .014), .95)
+WOOD = material("REF2_Wood", (.18, .075, .030), .91)
+WOOD_L = material("REF2_WoodLight", (.30, .135, .052), .87)
+IRON = material("REF2_Iron", (.045, .050, .058), .40, .82)
+STEEL = material("REF2_Steel", (.31, .33, .34), .36, .70)
+BRONZE = material("REF2_Bronze", (.39, .22, .065), .46, .56)
+GRASS_D = material("REF2_GrassDark", (.060, .105, .045), .99)
+GRASS = material("REF2_Grass", (.115, .185, .070), .99)
+GRASS_L = material("REF2_GrassLight", (.17, .255, .095), .99)
+DIRT = material("REF2_Dirt", (.30, .20, .105), .99)
+DIRT_D = material("REF2_DirtDark", (.19, .115, .060), .99)
+WATER = material("REF2_Water", (.040, .15, .22), .28, .04)
+BLUE = material("REF2_Blue", (.040, .095, .28), .97)
+RED = material("REF2_Red", (.32, .040, .028), .97)
+CLOTH = material("REF2_Cloak", (.035, .032, .040), .99)
+TUNIC = material("REF2_Tunic", (.16, .125, .090), .97)
+LEATHER = material("REF2_Leather", (.14, .050, .022), .94)
+LEATHER_L = material("REF2_LeatherLight", (.27, .11, .042), .90)
+SKIN = material("REF2_Skin", (.59, .37, .245), .87)
+SKIN_S = material("REF2_SkinShadow", (.43, .245, .155), .90)
+HAIR = material("REF2_Brunette", (.055, .024, .013), .95)
+HAIR_L = material("REF2_BrunetteLight", (.12, .052, .024), .93)
+BONE = material("REF2_Bone", (.68, .61, .47), .95)
+BLACK = material("REF2_Black", (.010, .011, .013), .99)
+FELT = material("REF2_Felt", (.034, .061, .043), .99)
+FIRE = material("REF2_Fire", (1.0, .20, .018), .18, 0.0, (1.0, .11, .008), 6.0)
 
 
 def clear_scene():
@@ -81,7 +89,7 @@ def bevel(obj, width=.02):
         return obj
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
-    mod = obj.modifiers.new("RefBevel", "BEVEL")
+    mod = obj.modifiers.new("Ref2Bevel", "BEVEL")
     mod.width = width
     mod.segments = 1
     try:
@@ -201,256 +209,450 @@ def export_asset(objects, filename):
         export_animations=False,
         export_yup=True,
     )
-    print(f"[CastleCards Reference] Exported {filename}")
+    print(f"[CastleCards Reference V2] Exported {filename}")
 
 
-def add_crenellations(objects, prefix, a, b, z, height=.58, width=.42, depth=.62, mat=STONE):
+# -----------------------------------------------------------------------------
+# War table: one coherent timber surface, not alternating black stripes.
+# -----------------------------------------------------------------------------
+def build_table():
+    clear_scene()
+    o = []
+
+    o.append(cube("TableBody", (0, 0, -.12), (30.2, 27.0, .92), WOOD_D, b=.15))
+    o.append(cube("TableTop", (0, 0, .39), (29.8, 26.6, .18), WOOD, b=.07))
+
+    board_w = 29.2 / 12
+    for i in range(12):
+        x = -14.6 + board_w * (i + .5)
+        mat = (WOOD, WOOD_L, WOOD)[i % 3]
+        o.append(cube(f"TopBoard_{i}", (x, 0, .51), (board_w - .045, 26.0, .07), mat, b=.015))
+
+    cy = 1.95
+    w = 23.15
+    d = 18.55
+    o.append(cube("BoardWell", (0, cy, .64), (w, d, .16), FELT, b=.08))
+
+    for y in (cy - d / 2, cy + d / 2):
+        o.append(cube(f"BoardRailY_{y}", (0, y, .82), (w + .48, .46, .31), WOOD_L, b=.045))
+    for x in (-w / 2, w / 2):
+        o.append(cube(f"BoardRailX_{x}", (x, cy, .82), (.46, d + .48, .31), WOOD_L, b=.045))
+
+    for y in (-13.05, 13.05):
+        o.append(cube(f"OuterRailY_{y}", (0, y, .66), (29.55, .74, .42), WOOD_D, b=.060))
+        o.append(cube(f"BronzeInlayY_{y}", (0, y, .90), (25.8, .075, .055), BRONZE, b=.008))
+    for x in (-14.28, 14.28):
+        o.append(cube(f"OuterRailX_{x}", (x, 0, .66), (.74, 25.75, .42), WOOD_D, b=.060))
+
+    for i, (x, y) in enumerate(((-14.0, -12.8), (14.0, -12.8), (-14.0, 12.8), (14.0, 12.8))):
+        o.append(cube(f"CornerPlate_{i}", (x, y, .94), (.78, .78, .08), IRON, b=.035))
+        o.append(ico(f"CornerRivet_{i}", (x, y, 1.02), (.08, .08, .045), BRONZE, sub=1))
+
+    export_asset(o, "war_table_hero")
+
+
+# -----------------------------------------------------------------------------
+# Tavern: asymmetrical and open behind the opponent. No central chandelier.
+# -----------------------------------------------------------------------------
+def build_tavern():
+    clear_scene()
+    o = []
+    room_w = 38.0
+    room_d = 38.0
+
+    for i in range(18):
+        x = -room_w / 2 + (room_w / 18) * (i + .5)
+        mat = WOOD if i % 4 else WOOD_D
+        o.append(cube(f"Floor_{i}", (x, -1.0, -.88), (room_w / 18 - .035, room_d, .24), mat, b=.016))
+
+    for row in range(16):
+        z = .45 + row * .94
+        mat = WOOD if row % 3 else WOOD_D
+        o.append(cube(f"BackBoard_{row}", (0, -19.0, z), (37.4, .40, .87), mat, b=.014))
+
+    for row in range(15):
+        z = .55 + row * .98
+        o.append(cube(f"LeftWall_{row}", (-18.75, -1.0, z), (.40, 36.0, .90), WOOD_D if row % 3 == 0 else WOOD, b=.014))
+        o.append(cube(f"RightWall_{row}", (18.75, -1.0, z), (.40, 36.0, .90), WOOD_D if row % 4 == 0 else WOOD, b=.014))
+
+    for x in (-16.0, -11.0, 10.5, 15.5):
+        o.append(cube(f"BackPost_{x}", (x, -18.72, 7.5), (.48, .58, 15.0), WOOD_D, b=.028))
+    for z in (4.4, 10.8, 14.7):
+        o.append(cube(f"BackBeam_{z}", (0, -18.64, z), (36.8, .58, .46), WOOD_D, b=.025))
+
+    o.append(cube("NearSupport", (-10.7, -7.0, 7.3), (.72, .72, 14.6), WOOD_D, b=.035))
+
+    for z in (2.2, 4.65, 7.1):
+        o.append(cube(f"LeftShelf_{z}", (-11.5, -18.15, z), (8.0, 1.0, .20), WOOD_L, b=.016))
+    for i in range(13):
+        x = -14.8 + (i % 7) * 1.0
+        z = 2.55 + (i // 7) * 2.45 + (i % 3) * .05
+        if i == 5:
+            o.append(ico("ShelfSkull", (x, -17.86, z + .22), (.30, .24, .28), BONE, sub=1))
+        elif i % 4 == 0:
+            o.append(cube(f"Book_{i}", (x, -17.90, z), (.54, .52, .17), RED if i % 8 else BLUE, rot=(0, 0, math.radians((i % 3 - 1) * 5)), b=.010))
+        else:
+            h = .52 + (i % 3) * .10
+            o.append(cyl(f"Bottle_{i}", (x, -17.88, z + h * .45), .12, h, GRASS_D if i % 2 else STONE_D, verts=8, b=.005))
+            o.append(cyl(f"BottleNeck_{i}", (x, -17.88, z + h + .04), .048, .22, STONE_D, verts=8, b=.003))
+
+    o.append(cube("WeaponRail", (11.6, -18.12, 7.0), (9.1, .45, .22), WOOD_L, b=.018))
+    for i, x in enumerate((8.2, 10.0, 12.0, 14.0)):
+        o.append(beam(f"Spear_{i}", (x, -17.88, 4.3), (x + (-.35 if i % 2 else .35), -17.88, 9.2), .045, WOOD_L, 7))
+        o.append(cone(f"SpearHead_{i}", (x + (-.35 if i % 2 else .35), -17.88, 9.45), .13, 0, .48, STEEL, verts=4))
+    for i, x in enumerate((9.0, 13.3)):
+        o.append(ico(f"Shield_{i}", (x, -17.88, 5.25), (.75, .15, .75), BLUE if i == 0 else RED, sub=2))
+        o.append(ico(f"ShieldBoss_{i}", (x, -17.70, 5.25), (.16, .08, .16), STEEL, sub=1))
+
+    for link in range(9):
+        o.append(torus(f"LanternChain_{link}", (9.6, -17.0, 13.8 - link * .32), .10, .023, IRON, rot=(math.pi / 2 if link % 2 else 0, 0, 0), major_segments=8, minor_segments=4))
+    o.append(cube("LanternFrame", (9.6, -17.0, 10.65), (.72, .62, 1.05), IRON, b=.020))
+    o.append(ico("LanternFlame", (9.6, -17.0, 10.64), (.16, .14, .27), FIRE, sub=1))
+
+    for i, (x, y) in enumerate(((-16.0, -10.5), (-15.0, -8.8), (15.7, -11.2))):
+        o.append(cyl(f"Barrel_{i}", (x, y, .68), .68, 1.36, WOOD, verts=12, b=.016))
+        for dz in (-.42, .42):
+            o.append(torus(f"BarrelBand_{i}_{dz}", (x, y, .68 + dz), .66, .030, IRON, rot=(math.pi / 2, 0, 0), major_segments=12, minor_segments=4))
+
+    export_asset(o, "tavern_room_hero")
+
+
+# -----------------------------------------------------------------------------
+# Battlefield: sculpted miniature terrain with coherent large patches.
+# -----------------------------------------------------------------------------
+def terrain_height(x, y):
+    h = .12 * math.sin(x * .48) + .08 * math.cos(y * .60) + .05 * math.sin((x + y) * .88)
+    h += .055 * math.sin(x * .21 - y * .33)
+    river_x = -5.0 + .55 * math.sin(y * .50)
+    d = abs(x - river_x)
+    if d < 1.3:
+        h -= .22 * (1.0 - d / 1.3)
+    road_x = .18 * math.sin(y * .42)
+    if abs(x - road_x) < 1.0:
+        h *= .36
+    return h
+
+
+def ribbon(name, path, half_width, z, mat):
+    verts = []
+    faces = []
+    for i, (x, y) in enumerate(path):
+        if i == 0:
+            dx = path[1][0] - x
+            dy = path[1][1] - y
+        else:
+            dx = x - path[i - 1][0]
+            dy = y - path[i - 1][1]
+        length = max(.001, math.sqrt(dx * dx + dy * dy))
+        nx = -dy / length
+        ny = dx / length
+        verts.append((x + nx * half_width, y + ny * half_width, z))
+        verts.append((x - nx * half_width, y - ny * half_width, z))
+    for i in range(len(path) - 1):
+        a = i * 2
+        faces.append((a, a + 1, a + 3, a + 2))
+    return mesh_obj(name, verts, faces, [mat], [0] * len(faces))
+
+
+def add_tree(o, name, x, y, z, scale, pine=False):
+    o.append(cyl(name + "Trunk", (x, y, z + .55 * scale), .13 * scale, 1.10 * scale, WOOD_D, verts=7, b=.005))
+    if pine:
+        for i, (zz, radius) in enumerate(((1.0, .55), (1.40, .47), (1.76, .37))):
+            o.append(cone(f"{name}Pine_{i}", (x, y, z + zz * scale), radius * scale, .05 * scale, .68 * scale, (GRASS_D, GRASS, GRASS_L)[i % 3], verts=7))
+    else:
+        for i, (dx, dy, dz, radius) in enumerate(((0, 0, 1.28, .52), (-.32, .02, 1.35, .34), (.34, .04, 1.38, .35), (.04, .26, 1.58, .32))):
+            o.append(ico(f"{name}Leaf_{i}", (x + dx * scale, y + dy * scale, z + dz * scale), (radius * scale, radius * .86 * scale, radius * .70 * scale), (GRASS_D, GRASS, GRASS_L)[i % 3], sub=1, rot=(i * .12, i * .21, i * .16)))
+
+
+def build_battlefield():
+    clear_scene()
+    o = []
+    nx = 35
+    ny = 29
+    width = 22.0
+    depth = 17.4
+    verts = []
+
+    for j in range(ny):
+        y = -depth / 2 + depth * j / (ny - 1)
+        for i in range(nx):
+            x = -width / 2 + width * i / (nx - 1)
+            verts.append((x, y, terrain_height(x, y)))
+
+    faces = []
+    face_mats = []
+    mats = [GRASS, GRASS_D, GRASS_L, DIRT]
+    for j in range(ny - 1):
+        for i in range(nx - 1):
+            a = j * nx + i
+            faces.append((a, a + 1, a + 1 + nx, a + nx))
+            cx = -width / 2 + width * (i + .5) / (nx - 1)
+            cy = -depth / 2 + depth * (j + .5) / (ny - 1)
+            road_x = .18 * math.sin(cy * .42)
+            river_x = -5.0 + .55 * math.sin(cy * .50)
+            if abs(cx - road_x) < 1.05:
+                idx = 3
+            elif abs(cx - river_x) < 1.25:
+                idx = 1
+            else:
+                patch = math.sin(cx * .42) + .65 * math.cos(cy * .35) + .45 * math.sin((cx - cy) * .19)
+                if patch > .85:
+                    idx = 2
+                elif patch < -.72:
+                    idx = 1
+                else:
+                    idx = 0
+            face_mats.append(idx)
+    o.append(mesh_obj("SculptedGround", verts, faces, mats, face_mats))
+
+    river_path = []
+    road_path = []
+    for k in range(27):
+        y = -8.3 + k * (16.6 / 26)
+        river_path.append((-5.0 + .55 * math.sin(y * .50), y))
+        road_path.append((.18 * math.sin(y * .42), y))
+    o.append(ribbon("River", river_path, .68, .025, WATER))
+    o.append(ribbon("MainRoad", road_path, .60, .060, DIRT))
+    o.append(ribbon("BranchRoad", [(0, -.3), (1.3, -1.2), (2.8, -2.1), (4.6, -3.0), (6.3, -3.55)], .36, .064, DIRT_D))
+
+    rng = random.Random(2409)
+
+    for i in range(26):
+        y = -7.8 + i * (15.6 / 25)
+        rx = -5.0 + .55 * math.sin(y * .50)
+        side = -1 if i % 2 else 1
+        x = rx + side * rng.uniform(.82, 1.18)
+        o.append(ico(f"BankRock_{i}", (x, y, terrain_height(x, y) + .08), (rng.uniform(.10, .22), rng.uniform(.08, .18), rng.uniform(.06, .13)), STONE_D if i % 3 else STONE, sub=1, rot=(rng.random(), rng.random(), rng.random())))
+
+    bridge_y = -.55
+    rx = -5.0 + .55 * math.sin(bridge_y * .50)
+    for i in range(9):
+        x = rx - 1.30 + i * .325
+        o.append(cube(f"BridgePlank_{i}", (x, bridge_y, .30), (.28, 1.90, .15), WOOD_L if i % 2 else WOOD, rot=(0, 0, math.radians((i - 4) * 1.3)), b=.012))
+
+    tree_specs = (
+        (-9.0, -4.6, .72, False), (-8.4, -3.5, .60, False), (-9.2, -2.1, .66, True),
+        (-8.8, 2.6, .58, True), (-9.4, 4.0, .64, False), (8.8, -6.8, .68, False),
+        (9.3, -5.3, .58, True), (8.5, 1.9, .60, False), (9.1, 3.5, .55, True),
+        (7.8, 5.2, .50, False), (-7.5, -7.2, .50, True), (7.1, -1.0, .48, False),
+    )
+    for i, (x, y, s, pine) in enumerate(tree_specs):
+        add_tree(o, f"Tree_{i}", x, y, terrain_height(x, y), s, pine)
+
+    for i, (x, y, angle) in enumerate(((-7.4, -5.5, 16), (6.5, -1.8, -14), (7.4, -7.0, 25))):
+        z = terrain_height(x, y)
+        for block in range(3):
+            o.append(cube(f"Ruin_{i}_{block}", (x + (block - 1) * .34, y, z + .22 + block * .06), (.42, .30, .42 + block * .12), STONE_D if block % 2 else STONE, rot=(0, 0, math.radians(angle + block * 4)), b=.018))
+
+    for i in range(28):
+        x = rng.uniform(-9.8, 9.8)
+        y = rng.uniform(-7.8, 7.8)
+        if abs(x) < 1.0 or abs(x - (-5.0 + .55 * math.sin(y * .50))) < 1.3:
+            continue
+        z = terrain_height(x, y)
+        if i % 3 == 0:
+            o.append(ico(f"Pebble_{i}", (x, y, z + .06), (rng.uniform(.07, .15), rng.uniform(.06, .12), rng.uniform(.04, .09)), STONE_D if i % 2 else STONE, sub=1))
+        else:
+            o.append(ico(f"GrassClump_{i}", (x, y, z + .06), (.17, .12, .08), GRASS_L if i % 2 else GRASS_D, sub=1))
+
+    export_asset(o, "battlefield_terrain_hero")
+
+
+# -----------------------------------------------------------------------------
+# Fortress: broad, layered, readable and less cylindrical/toy-like.
+# -----------------------------------------------------------------------------
+def add_merlons(o, prefix, a, b, z, count, depth=.46):
     ax, ay = a
     bx, by = b
-    length = math.hypot(bx - ax, by - ay)
-    count = max(3, int(length / .72))
-    ang = math.atan2(by - ay, bx - ax)
+    angle = math.atan2(by - ay, bx - ax)
     for i in range(count):
         t = (i + .5) / count
         x = ax + (bx - ax) * t
         y = ay + (by - ay) * t
-        objects.append(cube(f"{prefix}_Merlon_{i}", (x, y, z), (width, depth, height), mat, rot=(0, 0, ang), b=.018))
+        o.append(cube(f"{prefix}_Merlon_{i}", (x, y, z), (.38, depth, .54), STONE_L if i % 3 == 0 else STONE, rot=(0, 0, angle), b=.016))
 
 
-def add_wall(objects, prefix, a, b, height=2.55, thick=.48):
+def wall(o, prefix, a, b, height=2.15, thick=.46):
     ax, ay = a
     bx, by = b
-    mid = ((ax + bx) * .5, (ay + by) * .5, height * .5)
+    mx = (ax + bx) * .5
+    my = (ay + by) * .5
     length = math.hypot(bx - ax, by - ay)
-    ang = math.atan2(by - ay, bx - ax)
-    objects.append(cube(prefix + "_Core", mid, (length, thick, height), STONE, rot=(0, 0, ang), b=.032))
-    objects.append(cube(prefix + "_Cap", (mid[0], mid[1], height + .04), (length + .10, thick + .10, .18), STONE_D, rot=(0, 0, ang), b=.014))
-    add_crenellations(objects, prefix, a, b, height + .38, height=.62, width=.40, depth=thick + .12)
-
-    # Sparse irregular face stones catch highlights without turning the wall into visual noise.
-    count = max(2, int(length / 1.45))
-    for row in range(3):
-        z = .48 + row * .67
-        for i in range(count):
-            t = (i + .5 + (row % 2) * .25) / count
-            t = min(.94, max(.06, t))
-            x = ax + (bx - ax) * t
-            y = ay + (by - ay) * t
-            normal = Vector((-(by - ay), bx - ax, 0)).normalized()
-            x += normal.x * (thick * .51)
-            y += normal.y * (thick * .51)
-            mat = (STONE_D, STONE_L, STONE)[(i + row) % 3]
-            objects.append(cube(f"{prefix}_Face_{row}_{i}", (x, y, z), (.62, .055, .30), mat, rot=(0, 0, ang), b=.006))
+    angle = math.atan2(by - ay, bx - ax)
+    o.append(cube(prefix + "Core", (mx, my, height * .5), (length, thick, height), STONE, rot=(0, 0, angle), b=.030))
+    o.append(cube(prefix + "Cap", (mx, my, height + .04), (length + .08, thick + .08, .16), STONE_D, rot=(0, 0, angle), b=.012))
+    add_merlons(o, prefix, a, b, height + .34, max(3, int(length / .72)), depth=thick + .08)
 
 
-def add_tower(objects, prefix, x, y, radius, height, accent=None):
-    accent = accent or STONE_L
-    objects.append(cyl(prefix + "_Core", (x, y, height * .5), radius, height, STONE, verts=10, b=.038))
-    objects.append(cyl(prefix + "_Foot", (x, y, .22), radius + .15, .44, STONE_D, verts=10, b=.024))
-    objects.append(cyl(prefix + "_TopBand", (x, y, height - .18), radius + .09, .20, accent, verts=10, b=.018))
-
-    for i in range(10):
-        angle = math.tau * i / 10
-        xx = x + math.cos(angle) * (radius - .03)
-        yy = y + math.sin(angle) * (radius - .03)
-        objects.append(cube(f"{prefix}_Merlon_{i}", (xx, yy, height + .35), (.40, .52, .62), STONE, rot=(0, 0, angle), b=.020))
-
-    for row in range(4):
-        z = .65 + row * max(.52, (height - 1.2) / 4)
-        for i in range(5):
-            angle = math.tau * (i + (row % 2) * .5) / 5
-            xx = x + math.cos(angle) * (radius + .015)
-            yy = y + math.sin(angle) * (radius + .015)
-            mat = (STONE_D, STONE_L, STONE)[(row + i) % 3]
-            objects.append(cube(f"{prefix}_Stone_{row}_{i}", (xx, yy, z), (.48, .050, .28), mat, rot=(0, 0, angle), b=.006))
-
-    # Deep arrow slits on the front and outside faces.
-    for j, angle in enumerate((0, math.pi / 2, math.pi, 3 * math.pi / 2)):
-        xx = x + math.cos(angle) * (radius + .025)
-        yy = y + math.sin(angle) * (radius + .025)
-        objects.append(cube(f"{prefix}_Slit_{j}", (xx, yy, height * .56), (.08, .055, .42), BLACK, rot=(0, 0, angle), b=.003))
+def tower(o, prefix, x, y, radius, height, rear=False):
+    o.append(cyl(prefix + "Core", (x, y, height * .5), radius, height, STONE_D if rear else STONE, verts=8, b=.035))
+    o.append(cyl(prefix + "Crown", (x, y, height - .10), radius + .10, .25, STONE_L, verts=8, b=.018))
+    for i in range(8):
+        angle = math.tau * i / 8
+        xx = x + math.cos(angle) * (radius - .04)
+        yy = y + math.sin(angle) * (radius - .04)
+        o.append(cube(f"{prefix}_Merlon_{i}", (xx, yy, height + .30), (.38, .46, .56), STONE, rot=(0, 0, angle), b=.016))
+    for angle in (0, math.pi / 2, math.pi, math.pi * 1.5):
+        xx = x + math.cos(angle) * (radius + .02)
+        yy = y + math.sin(angle) * (radius + .02)
+        o.append(cube(f"{prefix}_Slit_{int(angle * 100)}", (xx, yy, height * .55), (.07, .045, .38), BLACK, rot=(0, 0, angle), b=.002))
 
 
 def build_castle():
     clear_scene()
-    objects = []
+    o = []
 
-    # Low, broad silhouette inspired by the target frame. Front towers are intentionally heavier,
-    # while the keep stays back so the gate remains the focal point.
-    add_tower(objects, "FrontL", -2.85, -2.12, 1.05, 3.70, STONE_L)
-    add_tower(objects, "FrontR", 2.92, -2.12, 1.08, 3.82, STONE_L)
-    add_tower(objects, "RearL", -3.10, 1.80, .86, 3.25, STONE_D)
-    add_tower(objects, "RearR", 3.08, 1.85, .84, 3.15, STONE_D)
+    tower(o, "FrontL", -3.55, -1.95, .94, 3.25)
+    tower(o, "FrontR", 3.55, -1.95, .94, 3.25)
+    tower(o, "RearL", -3.75, 1.72, .76, 2.82, rear=True)
+    tower(o, "RearR", 3.75, 1.72, .76, 2.82, rear=True)
 
-    add_wall(objects, "LeftWall", (-2.85, -2.12), (-3.10, 1.80), 2.35, .50)
-    add_wall(objects, "RightWall", (2.92, -2.12), (3.08, 1.85), 2.35, .50)
-    add_wall(objects, "RearWall", (-3.10, 1.80), (3.08, 1.85), 2.25, .48)
-    add_wall(objects, "FrontLeft", (-2.85, -2.12), (-1.05, -2.12), 2.26, .50)
-    add_wall(objects, "FrontRight", (1.05, -2.12), (2.92, -2.12), 2.26, .50)
+    wall(o, "LeftWall", (-3.55, -1.95), (-3.75, 1.72), 2.05, .48)
+    wall(o, "RightWall", (3.55, -1.95), (3.75, 1.72), 2.05, .48)
+    wall(o, "RearWall", (-3.75, 1.72), (3.75, 1.72), 1.95, .44)
+    wall(o, "FrontLeft", (-3.55, -1.95), (-1.10, -1.95), 2.00, .48)
+    wall(o, "FrontRight", (1.10, -1.95), (3.55, -1.95), 2.00, .48)
 
-    # Wider curtain-wall wings create the same broad fortress footprint visible in the reference.
-    add_wall(objects, "WingL", (-3.55, -.92), (-5.38, -.75), 1.78, .44)
-    add_wall(objects, "WingR", (3.55, -.92), (5.42, -.72), 1.82, .44)
-    add_tower(objects, "WingTowerL", -5.55, -.70, .66, 2.40, STONE_D)
-    add_tower(objects, "WingTowerR", 5.60, -.67, .66, 2.44, STONE_D)
+    wall(o, "WingL", (-4.10, -.75), (-5.95, -.50), 1.48, .40)
+    wall(o, "WingR", (4.10, -.75), (5.95, -.48), 1.48, .40)
+    tower(o, "WingTowerL", -6.05, -.46, .58, 1.95, rear=True)
+    tower(o, "WingTowerR", 6.05, -.43, .58, 1.95, rear=True)
 
-    # Gatehouse is built around a real void instead of a dark rectangle pasted on a wall.
-    objects.append(cube("GatePierL", (-.72, -2.18, 1.45), (.70, .82, 2.90), STONE, b=.038))
-    objects.append(cube("GatePierR", (.72, -2.18, 1.45), (.70, .82, 2.90), STONE, b=.038))
-    objects.append(cube("GateBridge", (0, -2.18, 3.05), (2.10, .84, .95), STONE_L, b=.038))
-    objects.append(cube("GateShadow", (0, -2.61, 1.30), (1.08, .055, 2.35), BLACK, b=.002))
-    for i, x in enumerate((-.48, -.32, -.16, 0, .16, .32, .48)):
-        objects.append(cube(f"PortcullisV_{i}", (x, -2.66, 1.35), (.032, .040, 2.28), IRON, b=.002))
-    for i, z in enumerate((.52, .92, 1.32, 1.72, 2.12)):
-        objects.append(cube(f"PortcullisH_{i}", (0, -2.66, z), (1.05, .040, .032), IRON, b=.002))
-    add_crenellations(objects, "Gate", (-1.08, -2.18), (1.08, -2.18), 3.73, height=.62, width=.34, depth=.75)
+    o.append(cube("GatePierL", (-.76, -2.02, 1.28), (.76, .88, 2.56), STONE, b=.036))
+    o.append(cube("GatePierR", (.76, -2.02, 1.28), (.76, .88, 2.56), STONE, b=.036))
+    o.append(cube("GateTop", (0, -2.02, 2.72), (2.28, .90, .82), STONE_L, b=.034))
+    o.append(cube("GateVoid", (0, -2.49, 1.12), (1.06, .06, 2.05), BLACK, b=.002))
+    for i, x in enumerate((-.45, -.30, -.15, 0, .15, .30, .45)):
+        o.append(cube(f"PortV_{i}", (x, -2.53, 1.12), (.030, .035, 1.94), IRON, b=.001))
+    for i, z in enumerate((.48, .86, 1.24, 1.62, 2.0)):
+        o.append(cube(f"PortH_{i}", (0, -2.53, z), (1.02, .035, .030), IRON, b=.001))
+    add_merlons(o, "Gate", (-1.05, -2.02), (1.05, -2.02), 3.28, 5, depth=.76)
 
-    # Drawbridge and chain hardware make the entrance feel functional.
-    objects.append(cube("Drawbridge", (0, -3.18, .20), (1.55, 2.15, .22), WOOD_L, rot=(math.radians(4), 0, 0), b=.025))
-    for x in (-.55, .55):
-        objects.append(beam(f"BridgeChain_{x}", (x, -2.58, 2.55), (x, -3.85, .48), .030, IRON, 6))
-    for i in range(5):
-        objects.append(cube(f"BridgePlank_{i}", (-.58 + i * .29, -3.25, .34), (.22, 1.95, .075), WOOD, b=.008))
+    o.append(cube("Keep", (0, .45, 2.05), (3.45, 2.70, 4.10), STONE_D, b=.052))
+    o.append(cube("KeepFace", (0, -.93, 2.05), (3.22, .09, 3.92), STONE, b=.022))
+    o.append(cube("KeepCap", (0, .45, 4.16), (3.72, 2.98, .22), STONE_L, b=.020))
+    add_merlons(o, "KeepFront", (-1.52, -.92), (1.52, -.92), 4.55, 5, depth=.50)
 
-    # Central keep, offset rearward so it layers instead of becoming one giant central block.
-    objects.append(cube("KeepCore", (0, .55, 2.18), (3.55, 2.90, 4.36), STONE_D, b=.060))
-    objects.append(cube("KeepFront", (0, -.93, 2.16), (3.28, .10, 4.12), STONE, b=.024))
-    objects.append(cube("KeepCap", (0, .55, 4.47), (3.82, 3.16, .24), STONE_L, b=.022))
-    add_crenellations(objects, "KeepFront", (-1.55, -.91), (1.55, -.91), 4.88, height=.68, width=.38, depth=.55)
-    add_crenellations(objects, "KeepBack", (-1.55, 1.98), (1.55, 1.98), 4.88, height=.68, width=.38, depth=.55)
+    o.append(cyl("WatchTurret", (-.90, .40, 4.66), .50, 1.00, STONE, verts=8, b=.022))
+    for i in range(7):
+        a = math.tau * i / 7
+        o.append(cube(f"WatchMerlon_{i}", (-.90 + math.cos(a) * .43, .40 + math.sin(a) * .43, 5.34), (.22, .30, .36), STONE_L, rot=(0, 0, a), b=.010))
 
-    # Small upper tower gives an authored asymmetry rather than a perfectly mirrored toy castle.
-    objects.append(cyl("KeepTurret", (-.86, .54, 5.03), .58, 1.20, STONE, verts=9, b=.026))
-    for i in range(8):
-        a = math.tau * i / 8
-        objects.append(cube(f"KeepTurretMerlon_{i}", (-.86 + math.cos(a) * .50, .54 + math.sin(a) * .50, 5.86), (.24, .34, .42), STONE_L, rot=(0, 0, a), b=.012))
+    for i, (x, z) in enumerate(((-.82, 2.45), (.82, 2.45), (-.82, 3.30), (.82, 3.30))):
+        o.append(cube(f"Window_{i}", (x, -1.00, z), (.18, .045, .38), BLACK, b=.002))
+    for x in (-1.92, 1.92):
+        o.append(cube(f"Buttress_{x}", (x, -1.28, 1.0), (.40, .64, 2.0), STONE_D, rot=(0, 0, math.radians(3 if x < 0 else -3)), b=.025))
 
-    # Windows, buttresses, banners and flame sources are sized to remain readable at gameplay scale.
-    for i, (x, z) in enumerate(((-.85, 2.55), (.85, 2.55), (-.85, 3.48), (.85, 3.48))):
-        objects.append(cube(f"KeepWindow_{i}", (x, -1.00, z), (.20, .055, .42), BLACK, b=.003))
-        objects.append(cube(f"KeepLintel_{i}", (x, -1.04, z + .27), (.34, .08, .08), STONE_L, b=.004))
-    for i, x in enumerate((-1.80, 1.80)):
-        objects.append(cube(f"Buttress_{i}", (x, -1.42, 1.06), (.42, .72, 2.12), STONE_D, rot=(0, 0, math.radians(3 if x < 0 else -3)), b=.028))
+    o.append(cube("Drawbridge", (0, -3.06, .16), (1.52, 2.05, .20), WOOD_L, rot=(math.radians(3), 0, 0), b=.020))
+    for x in (-.54, .54):
+        o.append(beam(f"BridgeChain_{x}", (x, -2.50, 2.30), (x, -3.58, .42), .026, IRON, 6))
 
-    for i, (x, mat, z) in enumerate(((-1.12, BLUE, 3.54), (1.12, RED, 3.44))):
-        objects.append(cyl(f"BannerPole_{i}", (x, -2.66, z + .28), .028, 1.50, IRON, verts=8, b=.002))
-        objects.append(cube(f"Banner_{i}", (x, -2.70, z), (.58, .050, .92), mat, b=.006))
+    for i, (x, mat) in enumerate(((-1.16, BLUE), (1.16, RED))):
+        o.append(cyl(f"BannerPole_{i}", (x, -2.48, 3.22), .025, 1.24, IRON, verts=7, b=.002))
+        o.append(cube(f"Banner_{i}", (x, -2.52, 2.98), (.54, .045, .82), mat, b=.005))
 
-    for i, x in enumerate((-.92, .92)):
-        objects.append(beam(f"GateTorch_{i}", (x, -2.65, 2.25), (x, -2.75, 2.68), .026, WOOD_D, 6))
-        objects.append(ico(f"GateFlame_{i}", (x, -2.80, 2.83), (.065, .055, .15), FIRE, sub=1))
+    for i, x in enumerate((-.95, .95)):
+        o.append(beam(f"Torch_{i}", (x, -2.48, 2.04), (x, -2.56, 2.42), .024, WOOD_D, 6))
+        o.append(ico(f"Flame_{i}", (x, -2.60, 2.55), (.055, .050, .13), FIRE, sub=1))
 
-    # Grounding debris and moss patches break the perfect kit-bash feeling.
-    rng = random.Random(921)
-    for i in range(20):
-        x = rng.uniform(-5.7, 5.7)
-        y = rng.uniform(-2.9, 2.3)
-        if abs(x) < 1.25 and y < -1.35:
+    rng = random.Random(912)
+    for i in range(15):
+        x = rng.uniform(-5.8, 5.8)
+        y = rng.uniform(-2.6, 2.0)
+        if abs(x) < 1.25 and y < -1.3:
             continue
-        scale = rng.uniform(.09, .22)
-        objects.append(ico(f"Rubble_{i}", (x, y, .08), (scale, scale * .78, scale * .66), STONE_D if i % 2 else STONE, sub=1, rot=(rng.random(), rng.random(), rng.random())))
-    for i, (x, y, s) in enumerate(((-3.0, 1.45, .42), (2.68, 1.40, .34), (-5.25, -.42, .28), (5.18, -.35, .26))):
-        objects.append(ico(f"Moss_{i}", (x, y, .12), (s, s * .58, .055), STONE_MOSS, sub=1))
+        s = rng.uniform(.08, .18)
+        o.append(ico(f"Rubble_{i}", (x, y, .07), (s, s * .80, s * .62), STONE_D if i % 2 else STONE, sub=1, rot=(rng.random(), rng.random(), rng.random())))
+    for i, (x, y, s) in enumerate(((-3.2, 1.35, .34), (2.9, 1.34, .28), (-5.6, -.25, .22), (5.55, -.18, .20))):
+        o.append(ico(f"Moss_{i}", (x, y, .09), (s, s * .55, .05), MOSS, sub=1))
 
-    export_asset(objects, "castle_hero")
+    export_asset(o, "castle_hero")
 
 
+# -----------------------------------------------------------------------------
+# Opponent: smaller seated proportions, readable face and hands on the table.
+# -----------------------------------------------------------------------------
 def build_opponent():
     clear_scene()
-    objects = []
+    o = []
 
-    # The chair exists mostly as silhouette. The character is leaned forward so the face and hands
-    # read clearly over the far edge of the war table, matching the reference composition.
-    objects.append(cube("ChairBack", (0, 1.10, 4.25), (3.20, .34, 6.35), WOOD_D, b=.080))
-    objects.append(cube("ChairSeat", (0, .45, 1.30), (3.25, 2.05, .28), WOOD, b=.055))
-    for x in (-1.36, 1.36):
-        objects.append(cube(f"ChairPost_{x}", (x, 1.08, 4.58), (.26, .30, 6.80), WOOD_L, b=.030))
-        objects.append(ico(f"ChairCap_{x}", (x, 1.08, 8.02), (.20, .20, .24), BRONZE, sub=1))
+    o.append(cube("ChairBack", (0, .95, 3.80), (2.70, .30, 5.35), WOOD_D, b=.065))
+    o.append(cube("ChairSeat", (0, .28, 1.18), (2.85, 1.85, .26), WOOD, b=.045))
 
-    # Seated lower body stays dark so it recedes behind the tabletop.
-    objects.append(beam("ThighL", (-.58, .18, 2.55), (-.82, -.82, 1.75), .34, CLOTH, 10))
-    objects.append(beam("ThighR", (.58, .18, 2.55), (.82, -.82, 1.75), .34, CLOTH, 10))
+    o.append(beam("ThighL", (-.52, .10, 2.15), (-.70, -.65, 1.48), .29, CLOTH, 9))
+    o.append(beam("ThighR", (.52, .10, 2.15), (.70, -.65, 1.48), .29, CLOTH, 9))
 
-    # Layered torso: tunic, leather cross-straps, belt, cloak and collar.
-    objects.append(cone("Torso", (0, -.10, 4.68), 1.50, 1.12, 3.18, TUNIC, verts=10, rot=(math.radians(4), 0, 0)))
-    objects.append(ico("ShoulderMass", (0, -.05, 5.80), (1.92, .80, .60), CLOTH, sub=2))
+    o.append(cone("Torso", (0, -.34, 4.18), 1.28, .98, 2.70, TUNIC, verts=10, rot=(math.radians(7), 0, 0)))
+    o.append(ico("Shoulders", (0, -.24, 5.17), (1.56, .68, .50), CLOTH, sub=2))
     cloak_verts = [
-        (-1.64, -.50, 5.70), (-.28, -.84, 5.45), (-.36, -.72, 3.15), (-1.28, -.28, 2.78),
-        (.28, -.84, 5.45), (1.64, -.50, 5.70), (1.28, -.28, 2.78), (.36, -.72, 3.15),
+        (-1.46, -.48, 5.10), (-.26, -.82, 4.98), (-.35, -.68, 2.92), (-1.12, -.22, 2.60),
+        (.26, -.82, 4.98), (1.46, -.48, 5.10), (1.12, -.22, 2.60), (.35, -.68, 2.92),
     ]
-    objects.append(mesh_obj("CloakPanels", cloak_verts, [(0, 1, 2, 3), (4, 5, 6, 7)], [CLOTH], [0, 0]))
-    objects.append(torus("CloakCollar", (0, -.12, 6.15), .68, .16, CLOTH, rot=(math.pi / 2, 0, 0), major_segments=12, minor_segments=5))
-    objects.append(cube("Belt", (0, -.24, 3.42), (2.18, .62, .18), LEATHER, b=.022))
-    objects.append(cube("Buckle", (0, -.56, 3.42), (.30, .10, .27), BRONZE, b=.012))
-    objects.append(beam("StrapL", (-.78, -.62, 5.58), (.38, -.62, 3.72), .075, LEATHER_L, 8))
-    objects.append(beam("StrapR", (.82, -.61, 5.58), (-.36, -.61, 3.72), .075, LEATHER, 8))
+    o.append(mesh_obj("CloakPanels", cloak_verts, [(0, 1, 2, 3), (4, 5, 6, 7)], [CLOTH], [0, 0]))
+    o.append(torus("Collar", (0, -.28, 5.47), .57, .13, CLOTH, rot=(math.pi / 2, 0, 0), major_segments=12, minor_segments=5))
+    o.append(cube("Belt", (0, -.46, 3.12), (1.88, .54, .16), LEATHER, b=.018))
+    o.append(cube("Buckle", (0, -.75, 3.12), (.27, .08, .24), BRONZE, b=.010))
+    o.append(beam("StrapL", (-.66, -.75, 5.05), (.34, -.68, 3.45), .060, LEATHER_L, 7))
+    o.append(beam("StrapR", (.68, -.74, 5.05), (-.34, -.67, 3.45), .060, LEATHER, 7))
 
-    # Neck/head are moved slightly forward (negative Blender Y -> positive Godot Z) to prevent the
-    # face from being swallowed by the chair/back wall.
-    objects.append(cyl("Neck", (0, -.22, 6.35), .35, .58, SKIN_SHADOW, verts=10, b=.012))
-    objects.append(ico("Head", (0, -.34, 7.26), (.94, .80, 1.02), SKIN, sub=2))
-    objects.append(ico("Jaw", (0, -.45, 6.78), (.67, .64, .47), SKIN_SHADOW, sub=1))
-    objects.append(ico("Nose", (0, -1.12, 7.27), (.135, .16, .23), SKIN, sub=1))
-    objects.append(ico("CheekL", (-.49, -.94, 7.17), (.19, .08, .16), SKIN, sub=1))
-    objects.append(ico("CheekR", (.49, -.94, 7.17), (.19, .08, .16), SKIN, sub=1))
+    o.append(cyl("Neck", (0, -.42, 5.63), .30, .46, SKIN_S, verts=9, b=.010))
+    o.append(ico("Head", (0, -.58, 6.38), (.80, .69, .90), SKIN, sub=2))
+    o.append(ico("Jaw", (0, -.68, 5.98), (.58, .55, .42), SKIN_S, sub=1))
+    o.append(ico("Nose", (0, -1.20, 6.40), (.12, .15, .20), SKIN, sub=1))
+    o.append(ico("EarL", (-.77, -.55, 6.32), (.15, .10, .21), SKIN_S, sub=1))
+    o.append(ico("EarR", (.77, -.55, 6.32), (.15, .10, .21), SKIN_S, sub=1))
 
-    for side, x in (("L", -.31), ("R", .31)):
-        objects.append(ico(f"EyeWhite_{side}", (x, -1.04, 7.49), (.095, .045, .065), BONE, sub=1))
-        objects.append(ico(f"Iris_{side}", (x, -1.09, 7.49), (.042, .022, .042), BLACK, sub=1))
-        brow_rot = math.radians(-8 if side == "L" else 8)
-        objects.append(cube(f"Brow_{side}", (x, -1.08, 7.71), (.34, .060, .072), HAIR, rot=(0, 0, brow_rot), b=.005))
+    for side, x in (("L", -.27), ("R", .27)):
+        o.append(ico(f"EyeWhite_{side}", (x, -1.13, 6.58), (.085, .040, .060), BONE, sub=1))
+        o.append(ico(f"Iris_{side}", (x, -1.17, 6.58), (.038, .020, .038), BLACK, sub=1))
+        o.append(cube(f"Brow_{side}", (x, -1.13, 6.78), (.31, .050, .060), HAIR, rot=(0, 0, math.radians(-10 if side == "L" else 10)), b=.004))
 
-    # Brunette hair uses overlapping low-poly masses rather than a single helmet-like cap.
-    objects.append(ico("HairCrown", (0, -.22, 8.01), (.98, .81, .56), HAIR, sub=2))
-    hair_locks = (
-        (-.70, -.50, 7.88, .34, -.22), (.68, -.48, 7.90, .34, .20),
-        (-.84, -.05, 7.58, .30, -.10), (.82, -.02, 7.60, .30, .12),
-        (-.48, .30, 7.92, .32, -.18), (.46, .32, 7.94, .32, .16),
-        (-.18, -.76, 8.12, .28, -.08), (.20, -.74, 8.14, .27, .08),
+    o.append(ico("HairCrown", (0, -.48, 7.02), (.84, .72, .50), HAIR, sub=2))
+    locks = (
+        (-.58, -.77, 6.95, .30, -.18), (.58, -.77, 6.95, .30, .18),
+        (-.72, -.42, 6.70, .27, -.10), (.72, -.42, 6.70, .27, .10),
+        (-.42, -.18, 6.94, .29, -.12), (.42, -.18, 6.94, .29, .12),
+        (-.14, -.92, 7.10, .24, -.05), (.14, -.92, 7.10, .24, .05),
     )
-    for i, (x, y, z, s, rz) in enumerate(hair_locks):
-        objects.append(ico(f"HairLock_{i}", (x, y, z), (s, s * .72, s * .48), HAIR_L if i in (0, 4, 6) else HAIR, sub=1, rot=(i * .12, i * .08, rz)))
+    for i, (x, y, z, s, rz) in enumerate(locks):
+        o.append(ico(f"HairLock_{i}", (x, y, z), (s, s * .72, s * .46), HAIR_L if i in (0, 4, 6) else HAIR, sub=1, rot=(i * .08, i * .05, rz)))
 
-    # Beard and moustache are layered to keep the mouth/chin silhouette readable.
-    objects.append(cone("BeardMain", (0, -.92, 6.66), .58, .12, .88, HAIR, verts=9, rot=(math.radians(7), 0, 0)))
-    objects.append(ico("BeardL", (-.33, -.89, 6.91), (.33, .19, .40), HAIR_L, sub=1, rot=(0, 0, -.12)))
-    objects.append(ico("BeardR", (.33, -.89, 6.91), (.33, .19, .40), HAIR, sub=1, rot=(0, 0, .12)))
-    objects.append(cube("MustacheL", (-.18, -1.09, 7.00), (.30, .052, .085), HAIR, rot=(0, 0, math.radians(-11)), b=.004))
-    objects.append(cube("MustacheR", (.18, -1.09, 7.00), (.30, .052, .085), HAIR, rot=(0, 0, math.radians(11)), b=.004))
+    o.append(ico("BeardChin", (0, -1.00, 5.83), (.43, .18, .42), HAIR, sub=1))
+    o.append(ico("BeardL", (-.30, -.99, 6.03), (.27, .16, .34), HAIR_L, sub=1, rot=(0, 0, -.10)))
+    o.append(ico("BeardR", (.30, -.99, 6.03), (.27, .16, .34), HAIR, sub=1, rot=(0, 0, .10)))
+    o.append(cube("MustacheL", (-.16, -1.18, 6.14), (.26, .045, .070), HAIR, rot=(0, 0, math.radians(-10)), b=.003))
+    o.append(cube("MustacheR", (.16, -1.18, 6.14), (.26, .045, .070), HAIR, rot=(0, 0, math.radians(10)), b=.003))
 
-    # Forward-reaching arms. The hands sit lower and farther forward than the old pass so they feel
-    # planted on/near the table instead of dangling beside the torso.
-    shoulder_l = (-1.58, -.12, 5.46)
-    elbow_l = (-2.18, -.82, 4.32)
-    wrist_l = (-2.00, -2.08, 3.18)
-    shoulder_r = (1.58, -.12, 5.46)
-    elbow_r = (2.15, -.84, 4.34)
-    wrist_r = (1.92, -2.10, 3.20)
-    objects.append(beam("UpperArmL", shoulder_l, elbow_l, .31, CLOTH, 10))
-    objects.append(beam("UpperArmR", shoulder_r, elbow_r, .31, CLOTH, 10))
-    objects.append(cyl("BracerL", (-2.11, -1.48, 3.72), .26, .72, LEATHER, verts=9, rot=(math.radians(68), 0, math.radians(-8)), b=.010))
-    objects.append(cyl("BracerR", (2.04, -1.50, 3.74), .26, .72, LEATHER, verts=9, rot=(math.radians(68), 0, math.radians(8)), b=.010))
-    objects.append(beam("ForearmL", elbow_l, wrist_l, .255, SKIN, 10))
-    objects.append(beam("ForearmR", elbow_r, wrist_r, .255, SKIN, 10))
-    objects.append(ico("HandL", wrist_l, (.39, .31, .42), SKIN, sub=2, rot=(.18, 0, -.10)))
-    objects.append(ico("HandR", wrist_r, (.39, .31, .42), SKIN, sub=2, rot=(.18, 0, .10)))
+    shoulder_l = (-1.28, -.35, 4.93)
+    elbow_l = (-1.82, -.92, 3.95)
+    wrist_l = (-1.72, -1.92, 2.72)
+    shoulder_r = (1.28, -.35, 4.93)
+    elbow_r = (1.82, -.92, 3.95)
+    wrist_r = (1.72, -1.92, 2.72)
+    o.append(beam("UpperArmL", shoulder_l, elbow_l, .27, CLOTH, 9))
+    o.append(beam("UpperArmR", shoulder_r, elbow_r, .27, CLOTH, 9))
+    o.append(beam("ForearmL", elbow_l, wrist_l, .225, SKIN, 9))
+    o.append(beam("ForearmR", elbow_r, wrist_r, .225, SKIN, 9))
+    o.append(cyl("BracerL", (-1.78, -1.42, 3.30), .23, .62, LEATHER, verts=8, rot=(math.radians(66), 0, math.radians(-6)), b=.008))
+    o.append(cyl("BracerR", (1.78, -1.42, 3.30), .23, .62, LEATHER, verts=8, rot=(math.radians(66), 0, math.radians(6)), b=.008))
+    o.append(ico("HandL", wrist_l, (.34, .28, .34), SKIN, sub=2, rot=(.12, 0, -.08)))
+    o.append(ico("HandR", wrist_r, (.34, .28, .34), SKIN, sub=2, rot=(.12, 0, .08)))
 
     for hand_idx, (wx, wy, wz, sign) in enumerate(((*wrist_l, -1), (*wrist_r, 1))):
         for finger in range(4):
-            x = wx + sign * (finger - 1.5) * .070
-            objects.append(beam(f"Finger_{hand_idx}_{finger}", (x, wy - .14, wz - .08), (x + sign * .018, wy - .38, wz - .12), .028, SKIN, 6))
+            x = wx + sign * (finger - 1.5) * .060
+            o.append(beam(f"Finger_{hand_idx}_{finger}", (x, wy - .10, wz - .05), (x + sign * .015, wy - .30, wz - .08), .024, SKIN, 6))
 
-    # Brooch/pendant gives the warm metallic focal point visible in the target image.
-    objects.append(ico("Brooch", (0, -.86, 5.91), (.21, .075, .21), BRONZE, sub=1))
-    objects.append(beam("PendantChain", (0, -.79, 5.75), (0, -.82, 5.12), .018, BRONZE, 6))
-    objects.append(ico("Pendant", (0, -.84, 4.99), (.13, .06, .17), BRONZE, sub=1))
+    o.append(ico("Brooch", (0, -.86, 5.25), (.18, .060, .18), BRONZE, sub=1))
+    o.append(beam("PendantChain", (0, -.81, 5.10), (0, -.84, 4.58), .016, BRONZE, 6))
+    o.append(ico("Pendant", (0, -.86, 4.47), (.11, .05, .15), BRONZE, sub=1))
 
-    export_asset(objects, "opponent_hero")
+    export_asset(o, "opponent_hero")
 
 
-jobs = [build_castle, build_opponent]
-print("\n[CastleCards Reference] Generating reference-composition hero assets...\n")
+jobs = [build_table, build_tavern, build_battlefield, build_castle, build_opponent]
+print("\n[CastleCards Reference V2] Generating target-quality scene assets...\n")
 for fn in jobs:
-    print(f"[CastleCards Reference] {fn.__name__}")
+    print(f"[CastleCards Reference V2] {fn.__name__}")
     fn()
-print(f"\n[CastleCards Reference] Complete: {len(jobs)} hero assets regenerated.\n")
+print(f"\n[CastleCards Reference V2] Complete: {len(jobs)} assets regenerated.\n")
