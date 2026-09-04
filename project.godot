@@ -16,6 +16,10 @@ window/size/viewport_height=720
 window/size/window_width_override=1280
 window/size/window_height_override=720
 
+[dotnet]
+
+project/assembly_name="CastleCards"
+
 [rendering]
 
 textures/default_filters/use_nearest_mipmap_filter=false
