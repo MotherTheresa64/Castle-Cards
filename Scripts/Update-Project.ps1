@@ -20,16 +20,25 @@ if ($LASTEXITCODE -ne 0) {
     throw "git pull failed. Resolve any remaining local Git changes before continuing."
 }
 
+$acquireScript = Join-Path $projectRoot "Scripts\Acquire-Quality-Assets.ps1"
+if (-not (Test-Path $acquireScript)) { throw "Missing authored asset acquisition script: $acquireScript" }
+Write-Host "Preparing pinned CC0 quality art sources..." -ForegroundColor Yellow
+& $acquireScript
+if ($LASTEXITCODE -ne 0) { throw "Quality art source acquisition failed." }
+
 $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_tabletop.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_pass.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_pass.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_quality_assets.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
+$pipelineStamp = Join-Path $projectRoot ".assets-pipeline-version"
+$pipelineVersion = "authored-quality-v1"
 
 $expectedAssets = @(
     "Models\Castles\Medieval\castle_gatehouse.glb",
@@ -91,6 +100,8 @@ $expectedAssets = @(
     "Models\Hero\tavern_room_hero.glb",
     "Models\Hero\battlefield_terrain_hero.glb",
     "Models\Hero\castle_hero.glb",
+    "Models\Hero\castle_blue_hero.glb",
+    "Models\Hero\castle_red_hero.glb",
     "Models\Hero\opponent_hero.glb",
     "Models\Hero\war_table_hero.glb",
     "Models\Hero\spearman_hero.glb",
@@ -99,6 +110,14 @@ $expectedAssets = @(
 )
 
 $needsAssets = -not (Test-Path $assetStamp)
+
+if (-not (Test-Path $pipelineStamp)) {
+    $needsAssets = $true
+} else {
+    $installedPipeline = (Get-Content $pipelineStamp -Raw).Trim()
+    if ($installedPipeline -ne $pipelineVersion) { $needsAssets = $true }
+}
+
 if (-not $needsAssets) {
     foreach ($asset in $expectedAssets) {
         if (-not (Test-Path (Join-Path $projectRoot $asset))) {
@@ -150,6 +169,7 @@ if ($needsAssets) {
 
     New-Item -Path $assetStamp -ItemType File -Force | Out-Null
     (Get-Item $assetStamp).LastWriteTime = Get-Date
+    Set-Content -Path $pipelineStamp -Value $pipelineVersion -NoNewline
     Write-Host "Asset generation succeeded: $($expectedAssets.Count) verified GLB assets." -ForegroundColor Green
 }
 else {
@@ -163,5 +183,5 @@ if ($LASTEXITCODE -ne 0) { throw "dotnet build failed." }
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded and the reference-quality art pass is current." -ForegroundColor Green
+Write-Host "C# build succeeded and the authored quality art pass is current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green
