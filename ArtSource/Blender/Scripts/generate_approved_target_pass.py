@@ -5,10 +5,7 @@ from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / "Models" / "Hero"
-SRC = ROOT / "ArtSource" / "Blender" / "Hero"
-BASE_CASTLE = OUT / "castle_hero.glb"
 OUT.mkdir(parents=True, exist_ok=True)
-SRC.mkdir(parents=True, exist_ok=True)
 
 
 def material(name, rgb, roughness=.92, metallic=0.0, emission=None, emission_strength=0.0):
@@ -34,25 +31,21 @@ def material(name, rgb, roughness=.92, metallic=0.0, emission=None, emission_str
     return mat
 
 
-STONE = material("APPROVED_Stone", (.31, .30, .285), .96)
-STONE_D = material("APPROVED_StoneDark", (.13, .135, .14), .98)
-STONE_L = material("APPROVED_StoneLight", (.46, .43, .38), .94)
-CLOAK = material("APPROVED_Cloak", (.022, .024, .030), .99)
-CLOAK_HI = material("APPROVED_CloakHighlight", (.045, .047, .055), .98)
-TUNIC = material("APPROVED_Tunic", (.12, .095, .075), .97)
-LEATHER = material("APPROVED_Leather", (.105, .040, .018), .93)
-LEATHER_L = material("APPROVED_LeatherLight", (.23, .090, .034), .91)
+CLOAK = material("APPROVED_Cloak", (.018, .020, .026), .99)
+CLOAK_HI = material("APPROVED_CloakHighlight", (.040, .043, .052), .98)
+TUNIC = material("APPROVED_Tunic", (.090, .070, .055), .97)
+LEATHER = material("APPROVED_Leather", (.085, .030, .014), .93)
 SKIN = material("APPROVED_Skin", (.60, .36, .23), .88)
 SKIN_SHADOW = material("APPROVED_SkinShadow", (.43, .235, .145), .91)
-HAIR = material("APPROVED_Hair", (.038, .017, .010), .96)
-HAIR_L = material("APPROVED_HairHighlight", (.090, .038, .018), .94)
-EYE = material("APPROVED_Eye", (.012, .010, .008), .78)
+HAIR = material("APPROVED_Hair", (.030, .014, .008), .96)
+HAIR_L = material("APPROVED_HairHighlight", (.075, .030, .014), .94)
+EYE = material("APPROVED_Eye", (.008, .007, .006), .78)
 WHITE = material("APPROVED_EyeWhite", (.62, .56, .47), .84)
 BRONZE = material("APPROVED_Bronze", (.36, .20, .055), .48, .52)
-WOOD = material("APPROVED_Wood", (.15, .058, .024), .94)
-FIRE = material("APPROVED_Fire", (1.0, .20, .02), .20, 0.0, (1.0, .13, .01), 5.0)
-BLUE = (.045, .105, .31)
-RED = (.38, .045, .030)
+WOOD = material("APPROVED_Wood", (.12, .045, .020), .94)
+CARD = material("APPROVED_Card", (.24, .055, .030), .88)
+CARD_EDGE = material("APPROVED_CardEdge", (.58, .38, .16), .76)
+CARD_FACE = material("APPROVED_CardFace", (.42, .11, .055), .84)
 
 
 def clear_scene():
@@ -134,14 +127,8 @@ def cyl(name, loc, radius, depth, mat, verts=10, rot=(0, 0, 0), b=.012):
 
 
 def torus(name, loc, major, minor, mat, rot=(0, 0, 0), major_segments=12, minor_segments=5):
-    bpy.ops.mesh.primitive_torus_add(
-        major_radius=major,
-        minor_radius=minor,
-        major_segments=major_segments,
-        minor_segments=minor_segments,
-        location=loc,
-        rotation=rot,
-    )
+    bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor, major_segments=major_segments,
+                                    minor_segments=minor_segments, location=loc, rotation=rot)
     obj = bpy.context.object
     obj.name = name
     assign(obj, mat)
@@ -181,161 +168,92 @@ def mesh_obj(name, verts, faces, mats, face_indices=None):
 
 def export_scene(filename):
     bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.export_scene.gltf(
-        filepath=str(OUT / filename),
-        export_format='GLB',
-        use_selection=True,
-        export_materials='EXPORT',
-        export_normals=True,
-        export_animations=False,
-        export_yup=True,
-    )
+    bpy.ops.export_scene.gltf(filepath=str(OUT / filename), export_format='GLB', use_selection=True,
+                              export_materials='EXPORT', export_normals=True, export_animations=False,
+                              export_yup=True)
     print(f"[CastleCards Approved] Exported {filename}")
-
-
-def import_gltf(path):
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=str(path))
-    imported = [obj for obj in bpy.data.objects if obj not in before]
-    if not imported:
-        raise RuntimeError(f"No objects imported from {path}")
-    return imported
-
-
-def recolor_team(objects, team):
-    accent = BLUE if team == "blue" else RED
-    accent_dark = tuple(c * .48 for c in accent)
-    seen = set()
-    for obj in objects:
-        if obj.type != 'MESH' or not hasattr(obj.data, 'materials'):
-            continue
-        for slot in obj.material_slots:
-            mat = slot.material
-            if not mat or mat.name in seen:
-                continue
-            seen.add(mat.name)
-            lname = mat.name.lower()
-            if "blue" not in lname and "red" not in lname and "banner" not in lname:
-                continue
-            if not mat.use_nodes:
-                mat.use_nodes = True
-            bsdf = mat.node_tree.nodes.get("Principled BSDF")
-            if bsdf and "Base Color" in bsdf.inputs:
-                target = accent_dark if "dark" in lname else accent
-                bsdf.inputs["Base Color"].default_value = (*target, 1.0)
-
-
-def build_castle_variant(team):
-    if not BASE_CASTLE.exists():
-        raise RuntimeError(f"Missing reference fortress: {BASE_CASTLE}")
-
-    clear_scene()
-    imported = import_gltf(BASE_CASTLE)
-    recolor_team(imported, team)
-
-    accent = material(
-        f"APPROVED_{team}_accent",
-        BLUE if team == "blue" else RED,
-        .96,
-    )
-    accent_dark = material(
-        f"APPROVED_{team}_accent_dark",
-        tuple(c * .50 for c in (BLUE if team == "blue" else RED)),
-        .97,
-    )
-
-    # Extra front-facing heraldry and fire make the fortress read as a hero miniature at gameplay distance.
-    for idx, x in enumerate((-2.65, 2.65)):
-        cube(f"TeamBanner_{idx}", (x, -2.49, 2.78), (.58, .065, 1.08), accent if idx == 0 else accent_dark, b=.008)
-        cyl(f"BannerPole_{idx}", (x, -2.45, 3.32), .025, 1.55, STONE_D, verts=7, b=.002)
-
-    for idx, x in enumerate((-4.70, 4.70)):
-        cyl(f"HeroTorchPole_{idx}", (x, -1.85, 3.28), .035, .55, WOOD, verts=7, b=.003)
-        ico(f"HeroTorchFlame_{idx}", (x, -1.86, 3.67), (.08, .07, .18), FIRE, sub=1)
-
-    export_scene(f"castle_{team}_hero.glb")
 
 
 def build_opponent():
     clear_scene()
-    o = []
 
-    # Low chair and hidden seat establish the human scale without exposing a standing lower body.
-    o.append(cube("ChairBack", (0, 1.20, 3.55), (3.20, .34, 5.25), WOOD, b=.065))
-    o.append(cube("ChairSeat", (0, .25, 1.45), (3.05, 1.85, .22), WOOD, b=.045))
+    cube("ChairBack", (0, .90, 3.05), (2.65, .24, 2.85), WOOD, b=.055)
+    cube("ChairSeat", (0, .18, 1.55), (2.80, 1.55, .20), WOOD, b=.040)
 
-    # Torso is deliberately pitched and shifted toward the board. This is the dominant silhouette in references 1-4.
-    o.append(cone("Torso", (0, -.52, 3.62), 1.58, 1.12, 2.92, TUNIC, verts=10, rot=(math.radians(24), 0, 0)))
-    o.append(ico("Shoulders", (0, -.78, 4.68), (1.90, .76, .50), CLOAK, sub=1))
+    cone("Torso", (0, -.58, 3.48), 1.55, 1.08, 2.78, TUNIC, verts=10, rot=(math.radians(23), 0, 0))
+    ico("Shoulders", (0, -.86, 4.48), (1.92, .76, .48), CLOAK, sub=1)
 
-    # Angular cloak panels widen the shoulders but taper before the table, avoiding the old rectangular mannequin look.
     cloak_verts = [
-        (-1.72, -.72, 4.78), (-.44, -1.10, 4.55), (-.55, -1.28, 2.42), (-1.18, -.34, 2.10),
-        (.44, -1.10, 4.55), (1.72, -.72, 4.78), (1.18, -.34, 2.10), (.55, -1.28, 2.42),
+        (-1.78, -.80, 4.55), (-.40, -1.18, 4.42), (-.50, -1.35, 2.22), (-1.35, -.30, 1.95),
+        (.40, -1.18, 4.42), (1.78, -.80, 4.55), (1.35, -.30, 1.95), (.50, -1.35, 2.22),
     ]
-    o.append(mesh_obj("CloakPanels", cloak_verts, [(0, 1, 2, 3), (4, 5, 6, 7)], [CLOAK, CLOAK_HI], [0, 1]))
-    o.append(torus("CloakCollar", (0, -.72, 4.95), .68, .15, CLOAK_HI, rot=(math.pi / 2, 0, 0)))
-    o.append(cube("Belt", (0, -.76, 2.74), (2.05, .40, .18), LEATHER, rot=(math.radians(10), 0, 0), b=.018))
-    o.append(cube("Buckle", (0, -1.00, 2.74), (.30, .08, .25), BRONZE, b=.010))
+    mesh_obj("CloakPanels", cloak_verts, [(0, 1, 2, 3), (4, 5, 6, 7)], [CLOAK, CLOAK_HI], [0, 1])
+    torus("CloakCollar", (0, -.84, 4.75), .68, .15, CLOAK_HI, rot=(math.pi / 2, 0, 0))
+    cube("Belt", (0, -.82, 2.60), (1.95, .36, .17), LEATHER, rot=(math.radians(10), 0, 0), b=.018)
+    cube("Buckle", (0, -1.03, 2.60), (.28, .07, .23), BRONZE, b=.010)
 
-    # Head moves forward with the torso; the face is slightly larger for readability at 1280x720.
-    o.append(cyl("Neck", (0, -.90, 5.02), .33, .58, SKIN_SHADOW, verts=9, b=.010))
-    o.append(ico("Head", (0, -1.15, 5.82), (.82, .66, .94), SKIN, sub=2))
-    o.append(ico("Jaw", (0, -1.30, 5.48), (.66, .49, .54), SKIN_SHADOW, sub=1))
+    cyl("Neck", (0, -.96, 4.82), .31, .54, SKIN_SHADOW, verts=9, b=.010)
+    ico("Head", (0, -1.22, 5.58), (.80, .64, .91), SKIN, sub=2)
+    ico("Jaw", (0, -1.38, 5.25), (.64, .47, .52), SKIN_SHADOW, sub=1)
 
-    # Layered brunette hair with a pointed, swept silhouette rather than round side blobs.
-    o.append(ico("HairCap", (0, -1.00, 6.42), (.90, .68, .46), HAIR, sub=1))
-    o.append(ico("HairTopL", (-.36, -1.20, 6.53), (.50, .29, .28), HAIR_L, sub=1, rot=(0, 0, -.20)))
-    o.append(ico("HairTopR", (.37, -1.18, 6.50), (.51, .29, .27), HAIR, sub=1, rot=(0, 0, .18)))
-    o.append(cone("HairSweepL", (-.70, -1.03, 6.03), .22, .06, .78, HAIR, verts=7, rot=(0, math.radians(-7), math.radians(-10))))
-    o.append(cone("HairSweepR", (.70, -1.03, 6.03), .22, .06, .78, HAIR_L, verts=7, rot=(0, math.radians(7), math.radians(10))))
+    ico("HairCap", (0, -1.08, 6.15), (.88, .66, .45), HAIR, sub=1)
+    ico("HairTopL", (-.35, -1.29, 6.26), (.49, .28, .27), HAIR_L, sub=1, rot=(0, 0, -.20))
+    ico("HairTopR", (.36, -1.27, 6.24), (.50, .28, .27), HAIR, sub=1, rot=(0, 0, .18))
+    cone("HairSweepL", (-.68, -1.12, 5.82), .21, .055, .72, HAIR, verts=7, rot=(0, math.radians(-7), math.radians(-10)))
+    cone("HairSweepR", (.68, -1.12, 5.82), .21, .055, .72, HAIR_L, verts=7, rot=(0, math.radians(7), math.radians(10)))
 
     for side in (-1, 1):
-        x = .28 * side
-        o.append(ico(f"EyeWhite_{side}", (x, -1.72, 5.94), (.13, .045, .075), WHITE, sub=1))
-        o.append(ico(f"Eye_{side}", (x, -1.765, 5.94), (.050, .024, .050), EYE, sub=1))
-        o.append(cube(f"Brow_{side}", (x, -1.76, 6.15), (.38, .055, .082), HAIR, rot=(0, 0, math.radians(-10 * side)), b=.004))
-    o.append(cone("Nose", (0, -1.82, 5.78), .10, .035, .42, SKIN_SHADOW, verts=6, rot=(math.radians(90), 0, 0)))
+        x = .27 * side
+        ico(f"EyeWhite_{side}", (x, -1.77, 5.70), (.125, .042, .070), WHITE, sub=1)
+        ico(f"Eye_{side}", (x, -1.812, 5.70), (.047, .022, .047), EYE, sub=1)
+        cube(f"Brow_{side}", (x, -1.81, 5.90), (.36, .052, .078), HAIR, rot=(0, 0, math.radians(-10 * side)), b=.004)
+    cone("Nose", (0, -1.87, 5.54), .095, .032, .40, SKIN_SHADOW, verts=6, rot=(math.radians(90), 0, 0))
 
-    # Dense beard and moustache are the strongest character-identification cues from the approved art.
-    o.append(ico("BeardCenter", (0, -1.50, 5.34), (.54, .25, .52), HAIR, sub=1))
-    o.append(ico("BeardL", (-.36, -1.47, 5.52), (.33, .21, .41), HAIR_L, sub=1))
-    o.append(ico("BeardR", (.36, -1.47, 5.52), (.33, .21, .41), HAIR, sub=1))
-    o.append(cone("BeardPoint", (0, -1.42, 4.98), .36, .08, .66, HAIR, verts=8))
-    o.append(cube("MoustacheL", (-.17, -1.77, 5.68), (.30, .045, .075), HAIR, rot=(0, 0, math.radians(-13)), b=.003))
-    o.append(cube("MoustacheR", (.17, -1.77, 5.68), (.30, .045, .075), HAIR, rot=(0, 0, math.radians(13)), b=.003))
+    ico("BeardCenter", (0, -1.55, 5.10), (.52, .24, .50), HAIR, sub=1)
+    ico("BeardL", (-.35, -1.52, 5.28), (.32, .20, .39), HAIR_L, sub=1)
+    ico("BeardR", (.35, -1.52, 5.28), (.32, .20, .39), HAIR, sub=1)
+    cone("BeardPoint", (0, -1.48, 4.77), .34, .075, .62, HAIR, verts=8)
+    cube("MoustacheL", (-.16, -1.82, 5.45), (.29, .042, .070), HAIR, rot=(0, 0, math.radians(-13)), b=.003)
+    cube("MoustacheR", (.16, -1.82, 5.45), (.29, .042, .070), HAIR, rot=(0, 0, math.radians(13)), b=.003)
 
-    # Hands rest over the far table edge. The low wrists are what make the whole character read as seated and engaged.
-    shoulder_l = (-1.48, -.82, 4.48)
-    elbow_l = (-1.88, -1.66, 3.68)
-    wrist_l = (-1.42, -2.78, 2.50)
-    shoulder_r = (1.48, -.82, 4.48)
-    elbow_r = (1.88, -1.66, 3.68)
-    wrist_r = (1.42, -2.78, 2.50)
-    o.append(beam("UpperArmL", shoulder_l, elbow_l, .32, CLOAK, 9))
-    o.append(beam("UpperArmR", shoulder_r, elbow_r, .32, CLOAK, 9))
-    o.append(beam("ForearmL", elbow_l, wrist_l, .245, SKIN, 9))
-    o.append(beam("ForearmR", elbow_r, wrist_r, .245, SKIN, 9))
-    o.append(ico("HandL", wrist_l, (.42, .34, .30), SKIN, sub=1, rot=(.10, 0, -.10)))
-    o.append(ico("HandR", wrist_r, (.42, .34, .30), SKIN, sub=1, rot=(.10, 0, .10)))
+    shoulder_r = (1.48, -.90, 4.28)
+    elbow_r = (1.82, -1.72, 3.45)
+    wrist_r = (1.34, -2.82, 2.38)
+    beam("UpperArmR", shoulder_r, elbow_r, .32, CLOAK, 9)
+    beam("ForearmR", elbow_r, wrist_r, .245, CLOAK_HI, 9)
+    ico("HandR", wrist_r, (.42, .34, .30), SKIN, sub=1, rot=(.10, 0, .10))
+    for finger in range(4):
+        x = wrist_r[0] + (finger - 1.5) * .075
+        beam(f"RightFinger_{finger}", (x, wrist_r[1] - .08, wrist_r[2] - .03),
+             (x + .015, wrist_r[1] - .42, wrist_r[2] - .10), .026, SKIN, 6)
 
-    for hand_idx, (wx, wy, wz, sign) in enumerate(((*wrist_l, -1), (*wrist_r, 1))):
-        for finger in range(4):
-            x = wx + (finger - 1.5) * .075
-            o.append(beam(f"Finger_{hand_idx}_{finger}", (x, wy - .10, wz - .03), (x + sign * .018, wy - .42, wz - .10), .026, SKIN, 6))
+    shoulder_l = (-1.48, -.90, 4.28)
+    elbow_l = (-1.72, -1.52, 4.30)
+    wrist_l = (-1.15, -2.08, 4.55)
+    beam("UpperArmL", shoulder_l, elbow_l, .32, CLOAK, 9)
+    beam("ForearmL", elbow_l, wrist_l, .245, CLOAK_HI, 9)
+    ico("HandL", wrist_l, (.39, .31, .29), SKIN, sub=1, rot=(0, 0, -.08))
 
-    o.append(ico("Brooch", (0, -1.18, 4.80), (.21, .07, .21), BRONZE, sub=1))
-    o.append(beam("PendantChain", (0, -1.10, 4.66), (0, -1.20, 4.28), .017, BRONZE, 6))
-    o.append(ico("Pendant", (0, -1.23, 4.16), (.10, .055, .15), BRONZE, sub=1))
+    card_rot = (math.radians(-4), math.radians(2), math.radians(-7))
+    cube("HeldCard", (-1.15, -2.37, 4.64), (.78, .060, 1.08), CARD, rot=card_rot, b=.025)
+    cube("HeldCardBorder", (-1.15, -2.405, 4.64), (.60, .015, .88), CARD_EDGE, rot=card_rot, b=.010)
+    cube("HeldCardFace", (-1.15, -2.420, 4.64), (.42, .010, .58), CARD_FACE, rot=card_rot, b=.008)
+    ico("HeldCardEmblem", (-1.15, -2.438, 4.64), (.13, .018, .13), BRONZE, sub=1)
+
+    for idx, xoff in enumerate((-.16, -.05, .06)):
+        beam(f"CardFinger_{idx}", (wrist_l[0] + xoff, wrist_l[1] - .04, wrist_l[2] + .02),
+             (-1.15 + xoff, -2.31, 4.92), .024, SKIN, 6)
+
+    ico("Brooch", (0, -1.22, 4.58), (.21, .07, .21), BRONZE, sub=1)
+    beam("PendantChain", (0, -1.14, 4.44), (0, -1.24, 4.07), .017, BRONZE, 6)
+    ico("Pendant", (0, -1.27, 3.95), (.10, .055, .15), BRONZE, sub=1)
 
     export_scene("opponent_hero.glb")
 
 
 def main():
-    build_castle_variant("blue")
-    build_castle_variant("red")
     build_opponent()
-    print("[CastleCards Approved] Refined fortress/opponent hero pass complete.")
+    print("[CastleCards Approved] Final approved-reference opponent pass complete. Castle/terrain quality is finalized by generate_quality_assets.py after this step.")
 
 
 if __name__ == "__main__":
