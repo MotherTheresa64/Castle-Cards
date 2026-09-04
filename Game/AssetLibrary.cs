@@ -9,6 +9,8 @@ public static class AssetLibrary
         ["hero_tavern"] = "res://Models/Hero/tavern_room_hero.glb",
         ["hero_battlefield"] = "res://Models/Hero/battlefield_terrain_hero.glb",
         ["hero_castle"] = "res://Models/Hero/castle_hero.glb",
+        ["hero_castle_blue"] = "res://Models/Hero/castle_blue_hero.glb",
+        ["hero_castle_red"] = "res://Models/Hero/castle_red_hero.glb",
         ["hero_opponent"] = "res://Models/Hero/opponent_hero.glb",
         ["hero_table"] = "res://Models/Hero/war_table_hero.glb",
         ["hero_spearman"] = "res://Models/Hero/spearman_hero.glb",
