@@ -112,22 +112,21 @@ def export_scene(filename):
 def build_castle(team):
     clear_scene()
 
-    # Approved references use low, broad curtain-wall fortresses. Keep the gatehouse and
-    # curtain wall as the silhouette, with the keep recessed so it never becomes a tall spire.
-    place_import(WALL_GATE, f"{team}_MainGate", location=(0.0, -0.72, 0.0), target_width=3.15)
-    place_import(TOWER_A[team], f"{team}_FrontTowerL", location=(-4.75, -0.55, 0.0), target_height=2.55)
-    place_import(TOWER_B[team], f"{team}_FrontTowerR", location=(4.75, -0.55, 0.0), target_height=2.55)
-    place_import(TOWER_B[team], f"{team}_InnerTowerL", location=(-2.65, 1.35, 0.0), target_height=2.20)
-    place_import(TOWER_A[team], f"{team}_InnerTowerR", location=(2.65, 1.35, 0.0), target_height=2.20)
-    place_import(CASTLE_CENTRAL[team], f"{team}_RearKeep", location=(0.0, 2.45, 0.0), target_height=2.65)
+    place_import(WALL_GATE, f"{team}_MainGate", location=(0.0, -1.00, 0.0), target_width=3.30)
+    place_import(TOWER_A[team], f"{team}_FrontTowerL", location=(-4.75, -0.78, 0.0), target_height=2.45)
+    place_import(TOWER_B[team], f"{team}_FrontTowerR", location=(4.75, -0.78, 0.0), target_height=2.45)
+    place_import(TOWER_B[team], f"{team}_OuterTowerL", location=(-6.15, 0.55, 0.0), target_height=2.05)
+    place_import(TOWER_A[team], f"{team}_OuterTowerR", location=(6.15, 0.55, 0.0), target_height=2.05)
+    place_import(TOWER_B[team], f"{team}_InnerTowerL", location=(-2.55, 1.35, 0.0), target_height=2.15)
+    place_import(TOWER_A[team], f"{team}_InnerTowerR", location=(2.55, 1.35, 0.0), target_height=2.15)
+    place_import(CASTLE_CENTRAL[team], f"{team}_RearKeep", location=(0.0, 2.60, 0.0), target_height=2.42)
 
     wall_specs = [
-        ((-3.35, -0.55, 0.0), 3.15, 0.0),
-        ((3.35, -0.55, 0.0), 3.15, 0.0),
-        ((-4.10, 0.75, 0.0), 2.70, -24.0),
-        ((4.10, 0.75, 0.0), 2.70, 24.0),
-        ((-1.45, 1.65, 0.0), 2.35, 0.0),
-        ((1.45, 1.65, 0.0), 2.35, 0.0),
+        ((-3.35, -0.78, 0.0), 3.30, 0.0), ((3.35, -0.78, 0.0), 3.30, 0.0),
+        ((-5.55, -0.05, 0.0), 2.55, -28.0), ((5.55, -0.05, 0.0), 2.55, 28.0),
+        ((-5.00, 1.25, 0.0), 2.35, -8.0), ((5.00, 1.25, 0.0), 2.35, 8.0),
+        ((-3.75, 1.78, 0.0), 2.45, -18.0), ((3.75, 1.78, 0.0), 2.45, 18.0),
+        ((-1.45, 1.78, 0.0), 2.35, 0.0), ((1.45, 1.78, 0.0), 2.35, 0.0),
     ]
     for index, (location, width, rotation) in enumerate(wall_specs):
         place_import(WALL, f"{team}_Curtain_{index}", location=location, rotation_deg=rotation, target_width=width)
@@ -141,19 +140,29 @@ def augment_battlefield():
     place_import(BRIDGE, "HeroBridge", location=(-5.05, -0.55, 0.22), target_width=2.70)
 
     trees = [
-        (TREE_A, (-9.0, -5.6, 0.18), 1.55, -16), (TREE_B, (-8.2, -4.7, 0.16), 1.35, 24),
+        (TREE_A, (-9.2, -6.2, 0.18), 1.60, -16), (TREE_B, (-8.45, -5.4, 0.16), 1.38, 24),
+        (TREE_A, (-9.0, -3.9, 0.16), 1.44, 8), (TREE_B, (-8.2, -3.0, 0.14), 1.25, -22),
+        (TREE_A, (-9.25, -.7, 0.14), 1.42, 18), (TREE_B, (-8.3, .2, 0.12), 1.22, -12),
         (TREE_A, (-9.3, 2.6, 0.14), 1.50, 10), (TREE_B, (-8.3, 3.7, 0.12), 1.25, -24),
-        (TREE_A, (8.8, -6.2, 0.15), 1.52, 18), (TREE_B, (9.4, -4.9, 0.14), 1.30, -9),
-        (TREE_A, (8.7, 2.1, 0.14), 1.48, -20), (TREE_B, (9.4, 3.5, 0.12), 1.28, 31),
-        (TREE_B, (6.9, 5.7, 0.10), 1.10, 5), (TREE_A, (-7.3, 6.0, 0.10), 1.16, -30),
+        (TREE_B, (-7.25, 5.8, 0.10), 1.12, -30), (TREE_A, (-8.45, 5.1, 0.10), 1.18, 8),
+        (TREE_A, (9.2, -6.3, 0.18), 1.58, 18), (TREE_B, (8.45, -5.4, 0.16), 1.34, -9),
+        (TREE_A, (9.0, -3.8, 0.16), 1.45, -17), (TREE_B, (8.2, -3.0, 0.14), 1.24, 24),
+        (TREE_A, (9.2, -.8, 0.14), 1.43, -20), (TREE_B, (8.25, .2, 0.12), 1.20, 31),
+        (TREE_A, (8.8, 2.1, 0.14), 1.48, -20), (TREE_B, (9.4, 3.5, 0.12), 1.28, 31),
+        (TREE_B, (6.95, 5.7, 0.10), 1.10, 5), (TREE_A, (8.25, 5.0, 0.10), 1.18, -16),
+        (TREE_B, (-5.8, -6.7, 0.10), .92, 11), (TREE_B, (5.9, -6.5, 0.10), .90, -8),
+        (TREE_B, (-5.9, 2.9, 0.10), .86, -14), (TREE_B, (5.8, 2.8, 0.10), .88, 16),
     ]
     for index, (path, location, height, rotation) in enumerate(trees):
         place_import(path, f"AuthoredTree_{index}", location=location, rotation_deg=rotation, target_height=height)
 
     rocks = [
-        (ROCK_A, (-7.7, -1.7, 0.08), 0.72, 12), (ROCK_C, (-7.1, 0.3, 0.06), 0.58, -18),
-        (ROCK_C, (7.3, -2.4, 0.06), 0.68, 27), (ROCK_A, (7.8, 0.7, 0.05), 0.60, -11),
-        (ROCK_C, (5.9, 4.8, 0.05), 0.52, 18), (ROCK_A, (-6.1, 4.7, 0.05), 0.55, -8),
+        (ROCK_A, (-7.9, -7.5, 0.08), .78, 12), (ROCK_C, (-6.9, -6.9, 0.06), .58, -18),
+        (ROCK_C, (-7.7, -1.7, 0.06), .68, 27), (ROCK_A, (-6.8, -.8, 0.05), .60, -11),
+        (ROCK_C, (-6.1, 4.8, 0.05), .52, 18), (ROCK_A, (-7.0, 4.2, 0.05), .55, -8),
+        (ROCK_A, (7.9, -7.5, 0.08), .78, -12), (ROCK_C, (6.9, -6.8, 0.06), .58, 18),
+        (ROCK_C, (7.5, -2.0, 0.06), .68, -27), (ROCK_A, (6.8, -.7, 0.05), .60, 11),
+        (ROCK_C, (5.9, 4.8, 0.05), .52, -18), (ROCK_A, (6.9, 4.1, 0.05), .55, 8),
     ]
     for index, (path, location, width, rotation) in enumerate(rocks):
         place_import(path, f"AuthoredRock_{index}", location=location, rotation_deg=rotation, target_width=width)
@@ -166,13 +175,7 @@ def main():
     build_castle("blue")
     build_castle("red")
     augment_battlefield()
-
-    # IMPORTANT: do not overwrite opponent_hero.glb here. generate_reference_pass.py runs
-    # immediately before this script and creates the custom brunette/bearded seated opponent
-    # specifically designed around the four approved Castle Cards concept images. The generic
-    # KayKit Barbarian was visibly wrong (bear-like hair silhouette/back-facing) and must never
-    # replace that hero character again.
-    print("[CastleCards Quality] Grounded castle/terrain pass complete; custom reference opponent preserved.")
+    print("[CastleCards Quality] Final authored castle/terrain pass complete; approved custom opponent preserved.")
 
 
 if __name__ == "__main__":
