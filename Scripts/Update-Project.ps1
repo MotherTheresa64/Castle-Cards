@@ -34,12 +34,13 @@ $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_tabletop.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_pass.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_approved_target_pass.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_quality_assets.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_quality_assets.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_realistic_target_pass.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
 $pipelineStamp = Join-Path $projectRoot ".assets-pipeline-version"
-$pipelineVersion = "approved-grid-authored-castles-v4"
+$pipelineVersion = "semi-realistic-target-v1"
 
 $expectedAssets = @(
     "Models\Castles\Medieval\castle_gatehouse.glb",
@@ -184,5 +185,5 @@ if ($LASTEXITCODE -ne 0) { throw "dotnet build failed." }
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded; placement grid, approved opponent, authored castles and dense battlefield are current." -ForegroundColor Green
+Write-Host "C# build succeeded and the semi-realistic final art pass is current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green
