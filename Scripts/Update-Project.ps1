@@ -38,7 +38,7 @@ $assetScripts = @(
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
 $pipelineStamp = Join-Path $projectRoot ".assets-pipeline-version"
-$pipelineVersion = "authored-quality-v1"
+$pipelineVersion = "authored-quality-v2-reference-opponent"
 
 $expectedAssets = @(
     "Models\Castles\Medieval\castle_gatehouse.glb",
