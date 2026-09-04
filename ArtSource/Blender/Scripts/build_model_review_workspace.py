@@ -79,6 +79,20 @@ def make_label(text, location, scale=0.42):
     return label
 
 
+def select_compatible_render_engine(scene):
+    # Blender changed the Eevee enum name across versions. Try the preferred modern
+    # identifier first, then fall back to identifiers exposed by older/newer builds.
+    for engine in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE", "BLENDER_WORKBENCH", "CYCLES"):
+        try:
+            scene.render.engine = engine
+            print(f"[CastleCards ModelReview] Render engine: {engine}")
+            return engine
+        except (TypeError, ValueError):
+            continue
+    print("[CastleCards ModelReview] Warning: could not explicitly set a render engine; using Blender default.")
+    return scene.render.engine
+
+
 def build_review(model_files):
     clear_scene()
     REVIEW_ROOT.mkdir(parents=True, exist_ok=True)
@@ -112,7 +126,7 @@ def build_review(model_files):
     floor.name = "ReviewFloor"
     floor.scale = (cols * cell_x * 0.55, rows * cell_y * 0.55, 1)
 
-    # Basic sun + area lights for Rendered mode.
+    # Basic lights for Rendered mode.
     bpy.ops.object.light_add(type="AREA", location=(0, rows * cell_y * 0.35, 18))
     key = bpy.context.object
     key.name = "ReviewKey"
@@ -128,7 +142,7 @@ def build_review(model_files):
     fill.rotation_euler = (math.radians(45), 0, math.radians(-35))
 
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE_NEXT"
+    select_compatible_render_engine(scene)
     scene.render.resolution_x = 1600
     scene.render.resolution_y = 900
     scene.render.resolution_percentage = 100
