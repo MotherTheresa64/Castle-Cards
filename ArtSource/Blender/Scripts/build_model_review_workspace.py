@@ -79,20 +79,6 @@ def make_label(text, location, scale=0.42):
     return label
 
 
-def select_compatible_render_engine(scene):
-    # Blender changed the Eevee enum name across versions. Try the preferred modern
-    # identifier first, then fall back to identifiers exposed by older/newer builds.
-    for engine in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE", "BLENDER_WORKBENCH", "CYCLES"):
-        try:
-            scene.render.engine = engine
-            print(f"[CastleCards ModelReview] Render engine: {engine}")
-            return engine
-        except (TypeError, ValueError):
-            continue
-    print("[CastleCards ModelReview] Warning: could not explicitly set a render engine; using Blender default.")
-    return scene.render.engine
-
-
 def build_review(model_files):
     clear_scene()
     REVIEW_ROOT.mkdir(parents=True, exist_ok=True)
@@ -119,14 +105,12 @@ def build_review(model_files):
 
         make_label(relative.as_posix(), (position.x, position.y - 2.75, 0.05), 0.33)
 
-    # Neutral floor so silhouettes are readable in Material Preview / Rendered view.
     rows = max(1, int(math.ceil(len(model_files) / cols)))
     bpy.ops.mesh.primitive_plane_add(size=2, location=(0, (rows - 1) * cell_y * 0.5, -0.03))
     floor = bpy.context.object
     floor.name = "ReviewFloor"
     floor.scale = (cols * cell_x * 0.55, rows * cell_y * 0.55, 1)
 
-    # Basic lights for Rendered mode.
     bpy.ops.object.light_add(type="AREA", location=(0, rows * cell_y * 0.35, 18))
     key = bpy.context.object
     key.name = "ReviewKey"
@@ -141,8 +125,11 @@ def build_review(model_files):
     fill.data.size = 10
     fill.rotation_euler = (math.radians(45), 0, math.radians(-35))
 
+    # Do not force a render engine here. Blender's accepted engine identifiers differ
+    # between versions, and this workspace is intended for inspection/editing rather
+    # than a final render. Leaving the user's/default engine untouched is the most
+    # version-compatible behavior.
     scene = bpy.context.scene
-    select_compatible_render_engine(scene)
     scene.render.resolution_x = 1600
     scene.render.resolution_y = 900
     scene.render.resolution_percentage = 100
