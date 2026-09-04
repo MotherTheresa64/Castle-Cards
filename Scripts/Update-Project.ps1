@@ -8,7 +8,6 @@ Write-Host "=== Castle Cards Update ===" -ForegroundColor Cyan
 Write-Host "Project: $projectRoot"
 Write-Host ""
 
-# Godot may rewrite project.godot locally. GitHub remains the source of truth.
 if (-not (git diff --quiet -- project.godot)) {
     Write-Host "Restoring local project.godot to repository version..." -ForegroundColor Yellow
     git restore -- project.godot
@@ -25,7 +24,8 @@ $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_assets.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_assets.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_tabletop.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
@@ -90,7 +90,11 @@ $expectedAssets = @(
     "Models\Hero\tavern_room_hero.glb",
     "Models\Hero\battlefield_terrain_hero.glb",
     "Models\Hero\castle_hero.glb",
-    "Models\Hero\opponent_hero.glb"
+    "Models\Hero\opponent_hero.glb",
+    "Models\Hero\war_table_hero.glb",
+    "Models\Hero\spearman_hero.glb",
+    "Models\Hero\archer_hero.glb",
+    "Models\Hero\swordsman_hero.glb"
 )
 
 $needsAssets = -not (Test-Path $assetStamp)
