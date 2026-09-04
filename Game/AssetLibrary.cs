@@ -28,11 +28,16 @@ public static class AssetLibrary
         ["swordsman"] = "res://Models/Units/Human/swordsman.glb",
         ["archer"] = "res://Models/Units/Human/archer.glb",
         ["knight"] = "res://Models/Units/Human/knight.glb",
+        ["king"] = "res://Models/Units/Human/king.glb",
+        ["royal_guard"] = "res://Models/Units/Human/royal_guard.glb",
+        ["wizard"] = "res://Models/Units/Human/wizard.glb",
+        ["assassin"] = "res://Models/Units/Human/assassin.glb",
         ["ogre"] = "res://Models/Units/Monsters/ogre.glb",
 
         // Siege
         ["catapult"] = "res://Models/Siege/Medieval/catapult.glb",
         ["ballista"] = "res://Models/Siege/Medieval/ballista.glb",
+        ["trebuchet"] = "res://Models/Siege/Medieval/trebuchet.glb",
 
         // Containers
         ["barrel"] = "res://Models/Props/Containers/barrel.glb",
@@ -57,6 +62,21 @@ public static class AssetLibrary
         ["book_stack"] = "res://Models/Props/Decor/book_stack.glb",
         ["skull"] = "res://Models/Props/Decor/skull.glb",
         ["dice_cluster"] = "res://Models/Props/Decor/dice_cluster.glb",
+
+        // Gameplay props: visible representations of the design systems
+        ["reinforcement_cart"] = "res://Models/Props/Gameplay/reinforcement_cart.glb",
+        ["reinforcement_outpost"] = "res://Models/Props/Gameplay/reinforcement_outpost.glb",
+        ["trap_spikes"] = "res://Models/Props/Gameplay/trap_spikes.glb",
+        ["castle_brazier"] = "res://Models/Props/Gameplay/castle_brazier.glb",
+        ["throne"] = "res://Models/Props/Gameplay/throne.glb",
+        ["spellbook_open"] = "res://Models/Props/Gameplay/spellbook_open.glb",
+        ["mana_crystals"] = "res://Models/Props/Gameplay/mana_crystals.glb",
+        ["suspicion_dial"] = "res://Models/Props/Gameplay/suspicion_dial.glb",
+        ["karma_medallion"] = "res://Models/Props/Gameplay/karma_medallion.glb",
+        ["cheat_stash"] = "res://Models/Props/Gameplay/cheat_stash.glb",
+        ["fireball_scorch"] = "res://Models/Props/Gameplay/fireball_scorch.glb",
+        ["healing_rune"] = "res://Models/Props/Gameplay/healing_rune.glb",
+        ["upgrade_totem"] = "res://Models/Props/Gameplay/upgrade_totem.glb",
 
         // Opponent
         ["opponent"] = "res://Models/Opponent/seated_opponent.glb",
