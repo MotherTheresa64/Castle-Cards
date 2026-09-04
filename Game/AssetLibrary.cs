@@ -10,6 +10,10 @@ public static class AssetLibrary
         ["hero_battlefield"] = "res://Models/Hero/battlefield_terrain_hero.glb",
         ["hero_castle"] = "res://Models/Hero/castle_hero.glb",
         ["hero_opponent"] = "res://Models/Hero/opponent_hero.glb",
+        ["hero_table"] = "res://Models/Hero/war_table_hero.glb",
+        ["hero_spearman"] = "res://Models/Hero/spearman_hero.glb",
+        ["hero_archer"] = "res://Models/Hero/archer_hero.glb",
+        ["hero_swordsman"] = "res://Models/Hero/swordsman_hero.glb",
 
         // Core castle kit
         ["castle_gatehouse"] = "res://Models/Castles/Medieval/castle_gatehouse.glb",
