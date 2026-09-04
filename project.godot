@@ -1,0 +1,21 @@
+; Engine configuration file.
+; Castle Cards - Godot 4.7.2 .NET
+config_version=5
+
+[application]
+
+config/name="Castle Cards"
+run/main_scene="res://Game.tscn"
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+boot_splash/show_image=false
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+
+[rendering]
+
+textures/default_filters/use_nearest_mipmap_filter=false
