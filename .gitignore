@@ -23,6 +23,10 @@ Thumbs.db
 ArtSource/Blender/**/*.blend
 Models/
 .assets-generated
+.assets-pipeline-version
+
+# Downloaded pinned CC0 source art (local build cache only)
+.asset-cache/
 
 # Local logs/temp
 *.log
