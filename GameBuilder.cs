@@ -81,26 +81,23 @@ public partial class GameBuilder : Node3D
         string playerCastle = AssetLibrary.Exists("hero_castle_blue") ? "hero_castle_blue" : "hero_castle";
         string enemyCastle = AssetLibrary.Exists("hero_castle_red") ? "hero_castle_red" : "hero_castle";
 
-        // Reference #1: broad fortress dominates the near edge; enemy fortress stays subordinate.
-        Spawn(playerCastle, new Vector3(0f, BoardY + .01f, 2.15f), .60f);
-        Spawn(enemyCastle, new Vector3(0f, BoardY + .01f, -11.55f), .30f, new Vector3(0f, 180f, 0f));
+        Spawn(playerCastle, new Vector3(0f, BoardY + .01f, 2.15f), .58f);
+        Spawn(enemyCastle, new Vector3(0f, BoardY + .01f, -11.55f), .31f, new Vector3(0f, 180f, 0f));
 
-        // Human-scale opponent is the far-side focal point, not another miniature.
-        Spawn("hero_opponent", new Vector3(0f, -1.82f, -15.05f), 1.55f, new Vector3(0f, 180f, 0f));
+        // The Blender quality pass now bakes the character's forward orientation. Do not turn him around again here.
+        Spawn("hero_opponent", new Vector3(0f, -1.05f, -14.80f), 1.22f);
 
         Spawn("throne", new Vector3(0f, BoardY + .02f, 2.00f), .17f, new Vector3(0f, 180f, 0f));
         Spawn("king", new Vector3(0f, BoardY + .03f, 2.12f), .20f, new Vector3(0f, 180f, 0f));
         Spawn("throne", new Vector3(0f, BoardY + .02f, -11.30f), .13f);
         Spawn("king", new Vector3(0f, BoardY + .03f, -11.18f), .16f);
 
-        // Blue formation immediately outside the near fortress.
         SpawnHeroUnit("hero_spearman", "spearman", new Vector3(-4.20f, BoardY + .03f, 0.35f), .35f, 0f);
         SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(-2.15f, BoardY + .03f, -.10f), .35f, -5f);
         Spawn("knight", new Vector3(0f, BoardY + .03f, -.34f), .30f, new Vector3(0f, 0f, 0f));
         SpawnHeroUnit("hero_archer", "archer", new Vector3(2.18f, BoardY + .03f, -.05f), .34f, 7f);
         SpawnHeroUnit("hero_spearman", "spearman", new Vector3(4.15f, BoardY + .03f, .38f), .34f, 0f);
 
-        // Sparse contested center leaves terrain readable while still showing a live miniature war.
         SpawnHeroUnit("hero_spearman", "spearman", new Vector3(-3.20f, BoardY + .03f, -3.35f), .29f, 12f);
         Spawn("royal_guard", new Vector3(-.70f, BoardY + .03f, -4.05f), .28f, new Vector3(0f, -8f, 0f));
         Spawn("wizard", new Vector3(2.55f, BoardY + .03f, -4.55f), .29f, new Vector3(0f, -12f, 0f));
@@ -113,7 +110,6 @@ public partial class GameBuilder : Node3D
 
     private void BuildPlayerEdge()
     {
-        // Reference #4: reachable physical reserves and cards across the near lip of the table.
         float[] reserveX = { -8.8f, -7.35f, -5.90f, 5.90f, 7.35f, 8.80f };
         string[] hero = { "hero_spearman", "hero_swordsman", "hero_archer", "hero_archer", "hero_swordsman", "hero_spearman" };
         string[] fallback = { "spearman", "swordsman", "archer", "archer", "swordsman", "spearman" };
@@ -147,7 +143,6 @@ public partial class GameBuilder : Node3D
         };
         AddChild(fill);
 
-        // Warm pools rather than a flat global wash: opponent, board center and fortress each get hierarchy.
         AddOmni("OpponentWarmKey", new Vector3(3.8f, 7.5f, -13.0f), new Color(1f, .53f, .25f), 2.35f, 10.5f, true);
         AddOmni("OpponentFaceFill", new Vector3(-3.5f, 6.0f, -12.5f), new Color(.50f, .57f, .68f), .72f, 8.5f, false);
         AddOmni("BoardCenterWarm", new Vector3(-1.5f, 5.6f, -4.6f), new Color(1f, .67f, .39f), 1.65f, 12.5f, true);
@@ -160,18 +155,18 @@ public partial class GameBuilder : Node3D
 
     private void BuildCamera()
     {
-        // Much closer hero composition: board fills the frame and opponent rises immediately behind it.
+        // Reference #1 balance: enough height to see the physical hand/reserves, while keeping the board dominant.
         var camera = new Camera3D
         {
             Name = "PlayerCamera",
-            Position = new Vector3(0f, 7.45f, 14.25f),
-            Fov = 54.0f,
+            Position = new Vector3(0f, 8.25f, 16.10f),
+            Fov = 52.0f,
             Near = 0.08f,
             Far = 120f,
             Current = true
         };
         AddChild(camera);
-        camera.LookAt(new Vector3(0f, 1.55f, -5.10f), Vector3.Up);
+        camera.LookAt(new Vector3(0f, 1.48f, -5.15f), Vector3.Up);
     }
 
     private void BuildHud()
