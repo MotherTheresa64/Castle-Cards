@@ -19,6 +19,11 @@ Thumbs.db
 *.blend2
 *.blend@
 
+# Generated Blender/Godot art outputs
+ArtSource/Blender/**/*.blend
+Models/
+.assets-generated
+
 # Local logs/temp
 *.log
 *.tmp
