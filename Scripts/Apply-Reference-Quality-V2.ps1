@@ -4,8 +4,8 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
 Write-Host ""
-Write-Host "=== Castle Cards Reference Quality V2 ===" -ForegroundColor Cyan
-Write-Host "Rebuilding the hero assets that dominate the gameplay camera..." -ForegroundColor Yellow
+Write-Host "=== Castle Cards Reference Quality V3 ===" -ForegroundColor Cyan
+Write-Host "Rebuilding hero assets, then replacing the seated opponent with the dedicated V3 hero model..." -ForegroundColor Yellow
 
 $blender = $null
 $blenderCommand = Get-Command blender.exe -ErrorAction SilentlyContinue
@@ -24,9 +24,10 @@ if (-not $blender) { throw "Blender could not be found. Install Blender or add b
 Write-Host "Blender: $blender" -ForegroundColor DarkGray
 
 $heroPass = Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_quality_v2.py"
+$opponentPass = Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_opponent_hero_v3.py"
 $materialPass = Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_cinematic_material_pass.py"
 
-foreach ($script in @($heroPass, $materialPass)) {
+foreach ($script in @($heroPass, $opponentPass, $materialPass)) {
     if (-not (Test-Path $script)) { throw "Missing reference-quality generator: $script" }
     Write-Host "Running $(Split-Path $script -Leaf)..." -ForegroundColor DarkGray
     & $blender --background --python $script
@@ -38,6 +39,7 @@ $required = @(
     "Models\Hero\castle_blue_hero.glb",
     "Models\Hero\castle_red_hero.glb",
     "Models\Hero\opponent_hero.glb",
+    "Models\Opponent\seated_opponent.glb",
     "Models\Hero\spearman_hero.glb",
     "Models\Hero\archer_hero.glb",
     "Models\Hero\swordsman_hero.glb"
@@ -53,5 +55,5 @@ $assetStamp = Join-Path $projectRoot ".assets-generated"
 if (-not (Test-Path $assetStamp)) { New-Item -Path $assetStamp -ItemType File -Force | Out-Null }
 (Get-Item $assetStamp).LastWriteTime = Get-Date
 
-Write-Host "Reference-quality V2 pass complete." -ForegroundColor Green
-Write-Host "Hero castles, sculpted terrain, opponent and core miniatures were rebuilt, then the embedded PBR material pass was reapplied." -ForegroundColor Green
+Write-Host "Reference-quality V3 pass complete." -ForegroundColor Green
+Write-Host "Hero castles and terrain were rebuilt, the seated opponent was replaced by the dedicated V3 character, and the PBR material pass was reapplied." -ForegroundColor Green
