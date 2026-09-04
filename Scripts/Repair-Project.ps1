@@ -10,9 +10,6 @@ Write-Host ""
 Write-Host "IMPORTANT: Godot should be closed while this repair runs." -ForegroundColor Yellow
 Write-Host ""
 
-# Godot may touch project.godot locally when opening/importing the project.
-# For this repo, GitHub is the source of truth, so discard only that generated/local change
-# before pulling. Other tracked local edits are intentionally left alone.
 if (-not (git diff --quiet -- project.godot)) {
     Write-Host "Restoring local project.godot to repository version..." -ForegroundColor Yellow
     git restore -- project.godot
@@ -42,20 +39,20 @@ foreach ($folder in $foldersToRemove) {
     }
 }
 
-Write-Host ""
-Write-Host "Restoring .NET packages..." -ForegroundColor Yellow
-dotnet restore .\CastleCards.csproj
-if ($LASTEXITCODE -ne 0) {
-    throw "dotnet restore failed."
+# Force regeneration of the locally generated art library after a repair.
+$assetStamp = Join-Path $projectRoot ".assets-generated"
+if (Test-Path $assetStamp) {
+    Remove-Item $assetStamp -Force
 }
 
 Write-Host ""
-Write-Host "Building CastleCards.csproj..." -ForegroundColor Yellow
-dotnet build .\CastleCards.csproj
+Write-Host "Running the normal updater to regenerate art and rebuild C#..." -ForegroundColor Yellow
+& (Join-Path $PSScriptRoot "Update-Project.ps1")
 if ($LASTEXITCODE -ne 0) {
-    throw "dotnet build failed."
+    throw "Update-Project.ps1 failed during repair."
 }
 
 Write-Host ""
 Write-Host "Repair completed successfully." -ForegroundColor Green
+Write-Host "The detailed art library was regenerated and C# was rebuilt." -ForegroundColor Green
 Write-Host "Open the project in Godot again now." -ForegroundColor Green
