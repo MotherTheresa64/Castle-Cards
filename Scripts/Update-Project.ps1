@@ -23,22 +23,56 @@ if ($LASTEXITCODE -ne 0) {
     throw "git pull failed. Resolve any remaining local Git changes before continuing."
 }
 
-$assetScript = Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"
+$assetScripts = @(
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py")
+)
+
 $assetStamp = Join-Path $projectRoot ".assets-generated"
+
 $expectedAssets = @(
     "Models\Castles\Medieval\castle_gatehouse.glb",
     "Models\Castles\Medieval\castle_tower.glb",
     "Models\Castles\Medieval\castle_wall.glb",
+    "Models\Castles\Medieval\castle_keep.glb",
     "Models\Terrain\Medieval\oak_tree.glb",
+    "Models\Terrain\Medieval\pine_tree.glb",
+    "Models\Terrain\Medieval\bush_cluster.glb",
+    "Models\Terrain\Medieval\rock_cluster.glb",
+    "Models\Terrain\Medieval\fence_section.glb",
+    "Models\Terrain\Medieval\ruin_wall.glb",
+    "Models\Terrain\Medieval\tent.glb",
+    "Models\Terrain\Medieval\campfire.glb",
+    "Models\Terrain\Medieval\watchtower.glb",
+    "Models\Terrain\Medieval\bridge_detail.glb",
     "Models\Units\Human\spearman.glb",
     "Models\Units\Human\swordsman.glb",
     "Models\Units\Human\archer.glb",
+    "Models\Units\Human\knight.glb",
+    "Models\Units\Monsters\ogre.glb",
     "Models\Siege\Medieval\catapult.glb",
+    "Models\Siege\Medieval\ballista.glb",
     "Models\Props\Containers\barrel.glb",
-    "Models\Tavern\Furniture\shelf.glb"
+    "Models\Props\Containers\crate.glb",
+    "Models\Props\Decor\mug.glb",
+    "Models\Props\Decor\bottle_cluster.glb",
+    "Models\Props\Decor\candle_cluster.glb",
+    "Models\Props\Decor\weapon_rack.glb",
+    "Models\Props\Decor\shield_decor.glb",
+    "Models\Props\Decor\book_stack.glb",
+    "Models\Props\Decor\skull.glb",
+    "Models\Props\Decor\dice_cluster.glb",
+    "Models\Tavern\Furniture\shelf.glb",
+    "Models\Tavern\Furniture\chair.glb",
+    "Models\Tavern\Furniture\bench.glb",
+    "Models\Tavern\Furniture\small_table.glb",
+    "Models\Tavern\Lighting\chandelier.glb",
+    "Models\Tavern\Lighting\brazier.glb",
+    "Models\Opponent\seated_opponent.glb"
 )
 
 $needsAssets = -not (Test-Path $assetStamp)
+
 if (-not $needsAssets) {
     foreach ($asset in $expectedAssets) {
         if (-not (Test-Path (Join-Path $projectRoot $asset))) {
@@ -48,8 +82,13 @@ if (-not $needsAssets) {
     }
 }
 
-if (-not $needsAssets -and (Test-Path $assetScript)) {
-    $needsAssets = (Get-Item $assetScript).LastWriteTime -gt (Get-Item $assetStamp).LastWriteTime
+if (-not $needsAssets -and (Test-Path $assetStamp)) {
+    foreach ($script in $assetScripts) {
+        if ((Test-Path $script) -and ((Get-Item $script).LastWriteTime -gt (Get-Item $assetStamp).LastWriteTime)) {
+            $needsAssets = $true
+            break
+        }
+    }
 }
 
 if ($needsAssets) {
@@ -76,14 +115,28 @@ if ($needsAssets) {
     }
 
     Write-Host "Blender: $blender" -ForegroundColor DarkGray
-    & $blender --background --python $assetScript
-    if ($LASTEXITCODE -ne 0) {
-        throw "Blender asset generation failed."
+
+    foreach ($script in $assetScripts) {
+        if (-not (Test-Path $script)) {
+            throw "Missing Blender generator: $script"
+        }
+
+        Write-Host "Running $(Split-Path $script -Leaf)..." -ForegroundColor DarkGray
+        & $blender --background --python $script
+        if ($LASTEXITCODE -ne 0) {
+            throw "Blender asset generation failed while running $script"
+        }
+    }
+
+    foreach ($asset in $expectedAssets) {
+        if (-not (Test-Path (Join-Path $projectRoot $asset))) {
+            throw "Expected generated asset is missing: $asset"
+        }
     }
 
     New-Item -Path $assetStamp -ItemType File -Force | Out-Null
     (Get-Item $assetStamp).LastWriteTime = Get-Date
-    Write-Host "Asset generation succeeded." -ForegroundColor Green
+    Write-Host "Asset generation succeeded: $($expectedAssets.Count) verified GLB assets." -ForegroundColor Green
 }
 else {
     Write-Host "Generated assets are already current." -ForegroundColor DarkGray
@@ -98,5 +151,5 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded and generated art is current." -ForegroundColor Green
+Write-Host "C# build succeeded and the high-detail art library is current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green
