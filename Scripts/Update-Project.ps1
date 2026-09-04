@@ -26,8 +26,7 @@ $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_assets.py"),
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_hero_tabletop.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_pass.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_locked_target_pass.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_reference_pass.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
@@ -94,8 +93,6 @@ $expectedAssets = @(
     "Models\Hero\castle_hero.glb",
     "Models\Hero\opponent_hero.glb",
     "Models\Hero\war_table_hero.glb",
-    "Models\Hero\reserve_rack_hero.glb",
-    "Models\Hero\card_deck_hero.glb",
     "Models\Hero\spearman_hero.glb",
     "Models\Hero\archer_hero.glb",
     "Models\Hero\swordsman_hero.glb"
@@ -166,5 +163,5 @@ if ($LASTEXITCODE -ne 0) { throw "dotnet build failed." }
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded and the locked visual-target art pass is current." -ForegroundColor Green
+Write-Host "C# build succeeded and the reference-quality art pass is current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green

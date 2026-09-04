@@ -11,8 +11,6 @@ public static class AssetLibrary
         ["hero_castle"] = "res://Models/Hero/castle_hero.glb",
         ["hero_opponent"] = "res://Models/Hero/opponent_hero.glb",
         ["hero_table"] = "res://Models/Hero/war_table_hero.glb",
-        ["hero_reserve_rack"] = "res://Models/Hero/reserve_rack_hero.glb",
-        ["hero_card_deck"] = "res://Models/Hero/card_deck_hero.glb",
         ["hero_spearman"] = "res://Models/Hero/spearman_hero.glb",
         ["hero_archer"] = "res://Models/Hero/archer_hero.glb",
         ["hero_swordsman"] = "res://Models/Hero/swordsman_hero.glb",

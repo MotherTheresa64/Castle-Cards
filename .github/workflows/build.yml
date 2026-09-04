@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
 
       - name: Validate Blender generator syntax
-        run: python -m py_compile ArtSource\Blender\Scripts\generate_assets.py ArtSource\Blender\Scripts\generate_detail_assets.py ArtSource\Blender\Scripts\generate_gameplay_assets.py ArtSource\Blender\Scripts\generate_hero_assets.py ArtSource\Blender\Scripts\generate_hero_tabletop.py ArtSource\Blender\Scripts\generate_reference_pass.py ArtSource\Blender\Scripts\generate_locked_target_pass.py
+        run: python -m py_compile ArtSource\Blender\Scripts\generate_assets.py ArtSource\Blender\Scripts\generate_detail_assets.py ArtSource\Blender\Scripts\generate_gameplay_assets.py ArtSource\Blender\Scripts\generate_hero_assets.py ArtSource\Blender\Scripts\generate_hero_tabletop.py ArtSource\Blender\Scripts\generate_reference_pass.py
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
