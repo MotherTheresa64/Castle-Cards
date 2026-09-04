@@ -11,10 +11,11 @@ boot_splash/show_image=false
 
 [display]
 
-window/size/viewport_width=1280
-window/size/viewport_height=720
-window/size/window_width_override=1280
-window/size/window_height_override=720
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/stretch/aspect="expand"
 
 [dotnet]
 
@@ -22,4 +23,8 @@ project/assembly_name="CastleCards"
 
 [rendering]
 
+anti_aliasing/quality/msaa_3d=2
+anti_aliasing/quality/use_taa=true
+lights_and_shadows/positional_shadow/atlas_size=4096
+lights_and_shadows/directional_shadow/size=4096
 textures/default_filters/use_nearest_mipmap_filter=false
