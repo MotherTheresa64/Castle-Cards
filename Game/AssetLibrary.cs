@@ -5,6 +5,12 @@ public static class AssetLibrary
 {
     private static readonly Dictionary<string, string> Paths = new()
     {
+        // Hero-quality visual set
+        ["hero_tavern"] = "res://Models/Hero/tavern_room_hero.glb",
+        ["hero_battlefield"] = "res://Models/Hero/battlefield_terrain_hero.glb",
+        ["hero_castle"] = "res://Models/Hero/castle_hero.glb",
+        ["hero_opponent"] = "res://Models/Hero/opponent_hero.glb",
+
         // Core castle kit
         ["castle_gatehouse"] = "res://Models/Castles/Medieval/castle_gatehouse.glb",
         ["castle_tower"] = "res://Models/Castles/Medieval/castle_tower.glb",
@@ -63,7 +69,7 @@ public static class AssetLibrary
         ["skull"] = "res://Models/Props/Decor/skull.glb",
         ["dice_cluster"] = "res://Models/Props/Decor/dice_cluster.glb",
 
-        // Gameplay props: visible representations of the design systems
+        // Gameplay props
         ["reinforcement_cart"] = "res://Models/Props/Gameplay/reinforcement_cart.glb",
         ["reinforcement_outpost"] = "res://Models/Props/Gameplay/reinforcement_outpost.glb",
         ["trap_spikes"] = "res://Models/Props/Gameplay/trap_spikes.glb",
@@ -78,7 +84,7 @@ public static class AssetLibrary
         ["healing_rune"] = "res://Models/Props/Gameplay/healing_rune.glb",
         ["upgrade_totem"] = "res://Models/Props/Gameplay/upgrade_totem.glb",
 
-        // Opponent
+        // Legacy opponent fallback
         ["opponent"] = "res://Models/Opponent/seated_opponent.glb",
     };
 
