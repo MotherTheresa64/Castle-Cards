@@ -31,30 +31,30 @@ public partial class GameBuilder : Node3D
         var environment = new Environment
         {
             BackgroundMode = Environment.BGMode.Color,
-            BackgroundColor = new Color(0.008f, 0.006f, 0.005f),
+            BackgroundColor = new Color(0.007f, 0.005f, 0.004f),
             AmbientLightSource = Environment.AmbientSource.Color,
-            AmbientLightColor = new Color(0.25f, 0.22f, 0.20f),
-            AmbientLightEnergy = 0.74f
+            AmbientLightColor = new Color(0.24f, 0.21f, 0.19f),
+            AmbientLightEnergy = 0.62f
         };
 
         environment.Set("tonemap_mode", 4);
-        environment.Set("tonemap_exposure", 1.55f);
-        environment.Set("tonemap_agx_contrast", 1.10f);
+        environment.Set("tonemap_exposure", 1.62f);
+        environment.Set("tonemap_agx_contrast", 1.16f);
         environment.Set("ssao_enabled", true);
-        environment.Set("ssao_radius", 1.72f);
-        environment.Set("ssao_intensity", 2.22f);
-        environment.Set("ssao_power", 1.25f);
-        environment.Set("ssao_detail", 0.92f);
+        environment.Set("ssao_radius", 1.90f);
+        environment.Set("ssao_intensity", 2.35f);
+        environment.Set("ssao_power", 1.28f);
+        environment.Set("ssao_detail", 0.96f);
         environment.Set("ssil_enabled", true);
-        environment.Set("ssil_radius", 2.85f);
-        environment.Set("ssil_intensity", 0.52f);
+        environment.Set("ssil_radius", 3.0f);
+        environment.Set("ssil_intensity", 0.56f);
         environment.Set("glow_enabled", true);
-        environment.Set("glow_intensity", 0.19f);
-        environment.Set("glow_bloom", 0.055f);
+        environment.Set("glow_intensity", 0.20f);
+        environment.Set("glow_bloom", 0.06f);
         environment.Set("fog_enabled", true);
-        environment.Set("fog_density", 0.0015f);
-        environment.Set("fog_light_color", new Color(0.22f, 0.13f, 0.075f));
-        environment.Set("fog_light_energy", 0.38f);
+        environment.Set("fog_density", 0.00135f);
+        environment.Set("fog_light_color", new Color(0.23f, 0.135f, 0.075f));
+        environment.Set("fog_light_energy", 0.40f);
 
         AddChild(new WorldEnvironment { Name = "WorldEnvironment", Environment = environment });
     }
@@ -82,27 +82,27 @@ public partial class GameBuilder : Node3D
 
     private void BuildTavernDress()
     {
-        // The approved concepts frame the board with tavern storytelling rather than a bare wall.
-        Spawn("barrel", new Vector3(-10.7f, 0.10f, -11.5f), 1.55f, new Vector3(0f, 16f, 0f));
-        Spawn("barrel", new Vector3(-9.45f, -0.08f, -12.15f), 1.10f, new Vector3(0f, -18f, 0f));
-        Spawn("crate", new Vector3(10.0f, -0.18f, -11.7f), 1.45f, new Vector3(0f, -14f, 0f));
-        Spawn("crate", new Vector3(11.0f, 0.08f, -12.6f), 1.05f, new Vector3(0f, 8f, 0f));
+        // Keep the room asymmetric and busy around the edges, while leaving a clean silhouette behind the opponent.
+        Spawn("barrel", new Vector3(-10.9f, 0.10f, -11.65f), 1.60f, new Vector3(0f, 16f, 0f));
+        Spawn("barrel", new Vector3(-9.45f, -0.08f, -12.50f), 1.08f, new Vector3(0f, -18f, 0f));
+        Spawn("crate", new Vector3(10.2f, -0.18f, -11.80f), 1.38f, new Vector3(0f, -14f, 0f));
+        Spawn("crate", new Vector3(11.1f, 0.05f, -12.75f), 1.02f, new Vector3(0f, 8f, 0f));
 
-        Spawn("weapon_rack", new Vector3(-7.9f, 0.05f, -16.4f), 1.38f, new Vector3(0f, 180f, 0f));
-        Spawn("shield_decor", new Vector3(-10.6f, 2.65f, -17.0f), 1.10f, new Vector3(0f, 180f, 0f));
-        Spawn("shelf", new Vector3(8.1f, 0.18f, -16.7f), 1.46f, new Vector3(0f, 180f, 0f));
-        Spawn("bottle_cluster", new Vector3(8.0f, 2.10f, -16.2f), 1.14f, new Vector3(0f, 180f, 0f));
-        Spawn("book_stack", new Vector3(10.25f, 1.55f, -16.15f), 1.08f, new Vector3(0f, 175f, 0f));
-        Spawn("skull", new Vector3(6.65f, 2.20f, -16.18f), .82f, new Vector3(0f, 165f, 0f));
+        Spawn("weapon_rack", new Vector3(-9.25f, 0.02f, -16.55f), 1.18f, new Vector3(0f, 180f, 0f));
+        Spawn("shield_decor", new Vector3(-11.0f, 2.65f, -17.05f), 1.05f, new Vector3(0f, 180f, 0f));
+        Spawn("shelf", new Vector3(9.15f, 0.18f, -16.75f), 1.32f, new Vector3(0f, 180f, 0f));
+        Spawn("bottle_cluster", new Vector3(8.75f, 2.12f, -16.20f), 1.10f, new Vector3(0f, 180f, 0f));
+        Spawn("book_stack", new Vector3(10.35f, 1.55f, -16.15f), 1.03f, new Vector3(0f, 175f, 0f));
+        Spawn("skull", new Vector3(7.35f, 2.20f, -16.18f), .78f, new Vector3(0f, 165f, 0f));
 
-        Spawn("candle_cluster", new Vector3(-9.0f, 1.05f, -10.7f), 1.22f);
-        Spawn("candle_cluster", new Vector3(9.0f, 1.16f, -10.8f), 1.18f);
-        Spawn("mug", new Vector3(-10.25f, .72f, -8.6f), 1.18f, new Vector3(0f, 24f, 0f));
+        Spawn("candle_cluster", new Vector3(-9.2f, 1.05f, -10.65f), 1.22f);
+        Spawn("candle_cluster", new Vector3(9.1f, 1.16f, -10.75f), 1.18f);
+        Spawn("mug", new Vector3(-10.3f, .72f, -8.55f), 1.15f, new Vector3(0f, 24f, 0f));
 
-        AddBox("BlueTavernBanner", new Vector3(-12.2f, 4.10f, -16.75f), new Vector3(1.70f, 3.85f, .07f), Blue);
-        AddBox("RedTavernBanner", new Vector3(12.2f, 4.10f, -16.75f), new Vector3(1.70f, 3.85f, .07f), Red);
-        AddBox("BlueBannerPole", new Vector3(-12.2f, 6.15f, -16.72f), new Vector3(2.15f, .10f, .10f), WoodLight);
-        AddBox("RedBannerPole", new Vector3(12.2f, 6.15f, -16.72f), new Vector3(2.15f, .10f, .10f), WoodLight);
+        AddBox("BlueTavernBanner", new Vector3(-12.8f, 4.20f, -16.90f), new Vector3(1.25f, 3.55f, .07f), Blue);
+        AddBox("RedTavernBanner", new Vector3(12.8f, 4.20f, -16.90f), new Vector3(1.25f, 3.55f, .07f), Red);
+        AddBox("BlueBannerPole", new Vector3(-12.8f, 6.05f, -16.87f), new Vector3(1.75f, .10f, .10f), WoodLight);
+        AddBox("RedBannerPole", new Vector3(12.8f, 6.05f, -16.87f), new Vector3(1.75f, .10f, .10f), WoodLight);
     }
 
     private void BuildBattlefield()
@@ -112,89 +112,107 @@ public partial class GameBuilder : Node3D
         string playerCastle = AssetLibrary.Exists("hero_castle_blue") ? "hero_castle_blue" : "hero_castle";
         string enemyCastle = AssetLibrary.Exists("hero_castle_red") ? "hero_castle_red" : "hero_castle";
 
-        // Reference #1 hierarchy: a substantial player fortress in the near third and a smaller enemy fortress.
-        Spawn(playerCastle, new Vector3(0f, BoardY + .01f, 1.55f), .69f);
-        Spawn(enemyCastle, new Vector3(0f, BoardY + .01f, -11.15f), .36f, new Vector3(0f, 180f, 0f));
+        // Approved reference #1: broad foreground fortress, clearly smaller enemy fortress, and the opponent towering behind both.
+        Spawn(playerCastle, new Vector3(0f, BoardY + .01f, 1.20f), .82f);
+        Spawn(enemyCastle, new Vector3(0f, BoardY + .01f, -11.15f), .43f, new Vector3(0f, 180f, 0f));
 
-        // Human-sized opponent rises immediately behind the enemy side and leans over the board.
-        Spawn("hero_opponent", new Vector3(0f, -0.72f, -14.65f), 1.34f);
+        // Lowering the human behind the table hides the standing lower body and makes the pose read as seated/leaning.
+        Spawn("hero_opponent", new Vector3(0f, -2.08f, -14.45f), 1.58f, new Vector3(8f, 0f, 0f));
 
-        Spawn("throne", new Vector3(0f, BoardY + .02f, 1.50f), .17f, new Vector3(0f, 180f, 0f));
-        Spawn("king", new Vector3(0f, BoardY + .03f, 1.60f), .20f, new Vector3(0f, 180f, 0f));
-        Spawn("throne", new Vector3(0f, BoardY + .02f, -11.02f), .13f);
-        Spawn("king", new Vector3(0f, BoardY + .03f, -10.92f), .16f);
+        Spawn("throne", new Vector3(0f, BoardY + .02f, 1.30f), .18f, new Vector3(0f, 180f, 0f));
+        Spawn("king", new Vector3(0f, BoardY + .03f, 1.42f), .21f, new Vector3(0f, 180f, 0f));
+        Spawn("throne", new Vector3(0f, BoardY + .02f, -10.98f), .14f);
+        Spawn("king", new Vector3(0f, BoardY + .03f, -10.88f), .17f);
+
+        // Castle-edge fire and siege silhouettes create the fortified foreground seen in the approved concepts.
+        Spawn("castle_brazier", new Vector3(-5.45f, BoardY + .02f, 1.12f), .42f);
+        Spawn("castle_brazier", new Vector3(5.45f, BoardY + .02f, 1.12f), .42f);
+        Spawn("trebuchet", new Vector3(-6.45f, BoardY + .03f, -.70f), .30f, new Vector3(0f, -8f, 0f));
+        Spawn("ballista", new Vector3(6.35f, BoardY + .03f, -.55f), .27f, new Vector3(0f, 8f, 0f));
 
         // Blue defensive rank immediately outside the fortress.
-        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(-4.80f, BoardY + .03f, -.15f), .35f, 0f);
-        SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(-3.20f, BoardY + .03f, -.38f), .35f, -4f);
-        Spawn("knight", new Vector3(-1.60f, BoardY + .03f, -.56f), .31f);
-        Spawn("royal_guard", new Vector3(0f, BoardY + .03f, -.62f), .30f);
-        Spawn("knight", new Vector3(1.60f, BoardY + .03f, -.56f), .31f);
-        SpawnHeroUnit("hero_archer", "archer", new Vector3(3.20f, BoardY + .03f, -.38f), .34f, 4f);
-        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(4.80f, BoardY + .03f, -.15f), .35f, 0f);
+        float[] blueX = { -5.15f, -3.85f, -2.55f, -1.25f, 0f, 1.25f, 2.55f, 3.85f, 5.15f };
+        string[] blueHero = { "hero_spearman", "hero_archer", "hero_swordsman", "hero_spearman", "hero_swordsman", "hero_spearman", "hero_archer", "hero_swordsman", "hero_spearman" };
+        string[] blueFallback = { "spearman", "archer", "swordsman", "spearman", "swordsman", "spearman", "archer", "swordsman", "spearman" };
+        for (int i = 0; i < blueX.Length; i++)
+        {
+            float z = -.72f - (i % 2) * .24f;
+            SpawnHeroUnit(blueHero[i], blueFallback[i], new Vector3(blueX[i], BoardY + .03f, z), .34f, (i - 4) * 1.5f);
+        }
 
-        // Contested center: enough units to feel alive without burying the terrain.
-        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(-4.1f, BoardY + .03f, -3.15f), .28f, 12f);
-        Spawn("royal_guard", new Vector3(-1.85f, BoardY + .03f, -3.95f), .28f, new Vector3(0f, -8f, 0f));
-        Spawn("wizard", new Vector3(.45f, BoardY + .03f, -4.25f), .29f, new Vector3(0f, -10f, 0f));
-        SpawnHeroUnit("hero_archer", "archer", new Vector3(2.70f, BoardY + .03f, -3.72f), .28f, 8f);
-        SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(4.45f, BoardY + .03f, -4.45f), .28f, 14f);
+        // Contested middle: staggered skirmish groups rather than a sparse empty field.
+        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(-4.85f, BoardY + .03f, -3.05f), .29f, 12f);
+        Spawn("royal_guard", new Vector3(-3.15f, BoardY + .03f, -3.65f), .29f, new Vector3(0f, -7f, 0f));
+        SpawnHeroUnit("hero_archer", "archer", new Vector3(-1.45f, BoardY + .03f, -4.15f), .28f, -4f);
+        Spawn("wizard", new Vector3(.25f, BoardY + .03f, -4.35f), .30f, new Vector3(0f, -9f, 0f));
+        SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(1.90f, BoardY + .03f, -4.05f), .29f, 6f);
+        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(3.55f, BoardY + .03f, -3.55f), .29f, 11f);
+        Spawn("knight", new Vector3(5.05f, BoardY + .03f, -4.35f), .27f, new Vector3(0f, 10f, 0f));
 
-        // Enemy formation near the far fortress.
-        SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(-4.15f, BoardY + .03f, -8.55f), .27f, 178f);
-        Spawn("royal_guard", new Vector3(-2.55f, BoardY + .03f, -8.92f), .27f, new Vector3(0f, 180f, 0f));
-        SpawnHeroUnit("hero_archer", "archer", new Vector3(-.85f, BoardY + .03f, -9.12f), .27f, 180f);
-        SpawnHeroUnit("hero_spearman", "spearman", new Vector3(.90f, BoardY + .03f, -9.10f), .27f, 180f);
-        Spawn("wizard", new Vector3(2.55f, BoardY + .03f, -8.90f), .27f, new Vector3(0f, 180f, 0f));
-        SpawnHeroUnit("hero_swordsman", "swordsman", new Vector3(4.15f, BoardY + .03f, -8.48f), .27f, 182f);
+        // Enemy formation forms a readable red-side line before the far fortress.
+        float[] redX = { -4.75f, -3.35f, -1.95f, -.65f, .65f, 1.95f, 3.35f, 4.75f };
+        string[] redHero = { "hero_swordsman", "hero_archer", "hero_spearman", "hero_swordsman", "hero_spearman", "hero_archer", "hero_swordsman", "hero_spearman" };
+        string[] redFallback = { "swordsman", "archer", "spearman", "swordsman", "spearman", "archer", "swordsman", "spearman" };
+        for (int i = 0; i < redX.Length; i++)
+        {
+            float z = -8.75f - (i % 2) * .20f;
+            SpawnHeroUnit(redHero[i], redFallback[i], new Vector3(redX[i], BoardY + .03f, z), .27f, 180f + (i - 4));
+        }
 
-        Spawn("trebuchet", new Vector3(-7.15f, BoardY + .03f, -1.55f), .28f, new Vector3(0f, -14f, 0f));
-        Spawn("catapult", new Vector3(6.95f, BoardY + .03f, -5.95f), .28f, new Vector3(0f, 18f, 0f));
-        Spawn("ballista", new Vector3(-6.65f, BoardY + .03f, -7.25f), .24f, new Vector3(0f, 168f, 0f));
+        Spawn("catapult", new Vector3(6.65f, BoardY + .03f, -6.35f), .29f, new Vector3(0f, 18f, 0f));
+        Spawn("ballista", new Vector3(-6.55f, BoardY + .03f, -7.30f), .25f, new Vector3(0f, 168f, 0f));
 
-        Spawn("campfire", new Vector3(-7.7f, BoardY + .02f, -5.4f), .34f);
-        Spawn("ruin_wall", new Vector3(7.55f, BoardY + .02f, -2.0f), .36f, new Vector3(0f, 20f, 0f));
+        // Terrain clusters make the board feel sculpted and authored instead of like a flat mat.
+        (float x, float z, string asset, float scale, float yaw)[] terrain =
+        {
+            (-8.70f, -2.25f, "pine_tree", .64f, -10f), (-7.90f, -2.85f, "pine_tree", .54f, 13f),
+            (-8.25f, -6.25f, "oak_tree", .58f, 17f), (-7.45f, -6.75f, "pine_tree", .48f, -7f),
+            (8.65f, -2.10f, "pine_tree", .62f, 12f), (7.85f, -2.85f, "oak_tree", .52f, -16f),
+            (8.35f, -6.15f, "pine_tree", .60f, -12f), (7.55f, -6.75f, "pine_tree", .47f, 20f),
+            (-6.75f, 2.15f, "rock_cluster", .42f, 18f), (6.85f, 2.10f, "rock_cluster", .44f, -12f),
+            (-6.40f, -4.80f, "rock_cluster", .34f, -8f), (6.15f, -4.65f, "rock_cluster", .36f, 15f),
+            (-7.75f, -5.15f, "campfire", .34f, 0f), (7.45f, -5.35f, "ruin_wall", .38f, 20f)
+        };
+        foreach (var t in terrain)
+            Spawn(t.asset, new Vector3(t.x, BoardY + .02f, t.z), t.scale, new Vector3(0f, t.yaw, 0f));
     }
 
     private void BuildPlayerEdge()
     {
-        // Reserve tray is physically reachable and visually supports the cheating mechanic.
-        AddBox("ReserveTrayBase", new Vector3(-6.70f, .66f, 6.45f), new Vector3(5.25f, .16f, 2.00f), new Color(.085f, .036f, .018f));
-        AddBox("ReserveTrayBack", new Vector3(-6.70f, .82f, 5.55f), new Vector3(5.30f, .32f, .14f), WoodLight);
-        AddBox("ReserveTrayFront", new Vector3(-6.70f, .82f, 7.35f), new Vector3(5.30f, .32f, .14f), WoodLight);
+        // Reserve tray is intentionally visible in-frame because physical reserves are part of the cheating mechanic.
+        AddBox("ReserveTrayBase", new Vector3(-6.70f, .66f, 6.60f), new Vector3(5.35f, .16f, 2.05f), new Color(.085f, .036f, .018f));
+        AddBox("ReserveTrayBack", new Vector3(-6.70f, .82f, 5.68f), new Vector3(5.40f, .32f, .14f), WoodLight);
+        AddBox("ReserveTrayFront", new Vector3(-6.70f, .82f, 7.52f), new Vector3(5.40f, .32f, .14f), WoodLight);
 
-        float[] reserveX = { -8.55f, -7.35f, -6.15f, -4.95f, 4.85f, 6.05f, 7.25f, 8.45f };
+        float[] reserveX = { -8.55f, -7.35f, -6.15f, -4.95f, 4.75f, 5.95f, 7.15f, 8.35f };
         string[] hero = { "hero_spearman", "hero_swordsman", "hero_archer", "hero_spearman", "hero_archer", "hero_swordsman", "hero_spearman", "hero_archer" };
         string[] fallback = { "spearman", "swordsman", "archer", "spearman", "archer", "swordsman", "spearman", "archer" };
         for (int i = 0; i < reserveX.Length; i++)
         {
-            float z = i < 4 ? 6.32f + (i % 2) * .12f : 6.28f + (i % 2) * .12f;
-            SpawnHeroUnit(hero[i], fallback[i], new Vector3(reserveX[i], .76f, z), .37f, 0f);
+            float z = i < 4 ? 6.48f + (i % 2) * .12f : 6.42f + (i % 2) * .12f;
+            SpawnHeroUnit(hero[i], fallback[i], new Vector3(reserveX[i], .76f, z), .38f, 0f);
         }
 
-        // Three readable physical cards occupy the player hand zone from the approved target.
+        // Three large physical cards and a draw deck mirror the approved concept's player-hand silhouette.
         for (int i = 0; i < 3; i++)
         {
-            float x = -1.82f + i * 1.82f;
+            float x = -1.84f + i * 1.84f;
             float angle = (i - 1) * 4.0f;
             Color face = i == 1 ? new Color(.66f, .50f, .30f) : Parchment;
             Color art = i == 0 ? BlueLight : (i == 1 ? new Color(.31f, .25f, .12f) : new Color(.24f, .15f, .30f));
-            AddRotatedBox($"Card_{i}", new Vector3(x, .75f, 7.10f), new Vector3(1.42f, .065f, 1.95f), face, new Vector3(-7f, 0f, angle));
-            AddRotatedBox($"CardArt_{i}", new Vector3(x, .80f, 6.83f), new Vector3(.95f, .018f, .82f), art, new Vector3(-7f, 0f, angle));
-            AddRotatedBox($"CardTitle_{i}", new Vector3(x, .805f, 7.52f), new Vector3(.92f, .014f, .12f), new Color(.095f, .070f, .045f), new Vector3(-7f, 0f, angle));
+            AddRotatedBox($"Card_{i}", new Vector3(x, .75f, 7.48f), new Vector3(1.50f, .065f, 2.08f), face, new Vector3(-7f, 0f, angle));
+            AddRotatedBox($"CardArt_{i}", new Vector3(x, .80f, 7.18f), new Vector3(1.00f, .018f, .88f), art, new Vector3(-7f, 0f, angle));
+            AddRotatedBox($"CardTitle_{i}", new Vector3(x, .805f, 7.93f), new Vector3(.96f, .014f, .12f), new Color(.095f, .070f, .045f), new Vector3(-7f, 0f, angle));
         }
 
-        // Physical draw deck on the right.
-        for (int i = 0; i < 7; i++)
-        {
-            AddRotatedBox($"DeckCard_{i}", new Vector3(9.20f + i * .035f, .73f + i * .035f, 6.95f - i * .025f), new Vector3(1.55f, .055f, 2.02f), Blue, new Vector3(-4f, 0f, -8f));
-        }
-        AddRotatedBox("DeckEmblem", new Vector3(9.38f, 1.00f, 6.70f), new Vector3(.72f, .018f, .72f), new Color(.58f, .38f, .10f), new Vector3(-4f, 0f, -8f));
+        for (int i = 0; i < 8; i++)
+            AddRotatedBox($"DeckCard_{i}", new Vector3(9.25f + i * .035f, .73f + i * .035f, 7.22f - i * .025f), new Vector3(1.58f, .055f, 2.08f), Blue, new Vector3(-4f, 0f, -8f));
+        AddRotatedBox("DeckEmblem", new Vector3(9.45f, 1.02f, 6.95f), new Vector3(.74f, .018f, .74f), new Color(.58f, .38f, .10f), new Vector3(-4f, 0f, -8f));
 
-        Spawn("cheat_stash", new Vector3(-9.45f, .74f, 7.00f), .34f, new Vector3(0f, 10f, 0f));
-        Spawn("dice_cluster", new Vector3(-8.65f, .76f, 7.12f), .42f);
-        Spawn("mana_crystals", new Vector3(7.95f, .76f, 7.38f), .40f, new Vector3(0f, 12f, 0f));
-        Spawn("suspicion_dial", new Vector3(6.95f, .76f, 7.45f), .35f, new Vector3(0f, -8f, 0f));
+        Spawn("cheat_stash", new Vector3(-9.50f, .74f, 7.18f), .35f, new Vector3(0f, 10f, 0f));
+        Spawn("dice_cluster", new Vector3(-8.65f, .76f, 7.34f), .43f);
+        Spawn("mana_crystals", new Vector3(7.95f, .76f, 7.62f), .41f, new Vector3(0f, 12f, 0f));
+        Spawn("suspicion_dial", new Vector3(6.92f, .76f, 7.68f), .36f, new Vector3(0f, -8f, 0f));
     }
 
     private void BuildLighting()
@@ -203,37 +221,38 @@ public partial class GameBuilder : Node3D
         {
             Name = "CoolAmbientFill",
             RotationDegrees = new Vector3(-56f, -22f, 0f),
-            LightColor = new Color(.48f, .52f, .60f),
-            LightEnergy = .32f,
+            LightColor = new Color(.46f, .51f, .60f),
+            LightEnergy = .25f,
             ShadowEnabled = true
         };
         AddChild(fill);
 
-        AddOmni("OpponentWarmKey", new Vector3(3.7f, 7.2f, -13.15f), new Color(1f, .52f, .23f), 2.95f, 11.2f, true);
-        AddOmni("OpponentFaceFill", new Vector3(-3.3f, 6.2f, -12.7f), new Color(.50f, .58f, .70f), .88f, 9.0f, false);
-        AddOmni("BoardCenterWarm", new Vector3(-1.4f, 5.5f, -4.4f), new Color(1f, .67f, .37f), 2.05f, 12.8f, true);
-        AddOmni("BoardCoolLift", new Vector3(5.4f, 5.8f, -2.6f), new Color(.42f, .50f, .62f), .72f, 12.0f, false);
-        AddOmni("PlayerCastleTorchL", new Vector3(-4.7f, 3.0f, 1.4f), new Color(1f, .38f, .12f), 1.42f, 5.5f, true);
-        AddOmni("PlayerCastleTorchR", new Vector3(4.7f, 3.0f, 1.4f), new Color(1f, .38f, .12f), 1.42f, 5.5f, true);
-        AddOmni("LeftTavernLantern", new Vector3(-10.4f, 6.8f, -9.7f), new Color(1f, .43f, .16f), 1.75f, 8.8f, true);
-        AddOmni("RightTavernLantern", new Vector3(10.1f, 7.0f, -10.0f), new Color(1f, .47f, .18f), 1.72f, 8.8f, true);
-        AddOmni("NearTableCandle", new Vector3(-10.0f, 2.0f, 5.7f), new Color(1f, .45f, .16f), 1.25f, 5.0f, true);
+        AddOmni("OpponentWarmKey", new Vector3(3.5f, 6.7f, -13.10f), new Color(1f, .50f, .22f), 3.25f, 11.5f, true);
+        AddOmni("OpponentFaceFill", new Vector3(-3.0f, 5.6f, -12.40f), new Color(.49f, .58f, .72f), .82f, 9.0f, false);
+        AddOmni("BoardCenterWarm", new Vector3(-1.1f, 5.2f, -4.3f), new Color(1f, .66f, .35f), 2.25f, 12.8f, true);
+        AddOmni("BoardCoolLift", new Vector3(5.2f, 5.6f, -2.6f), new Color(.40f, .49f, .63f), .66f, 12.0f, false);
+        AddOmni("PlayerCastleTorchL", new Vector3(-5.1f, 3.15f, 1.2f), new Color(1f, .36f, .10f), 1.65f, 5.8f, true);
+        AddOmni("PlayerCastleTorchR", new Vector3(5.1f, 3.15f, 1.2f), new Color(1f, .36f, .10f), 1.65f, 5.8f, true);
+        AddOmni("EnemyCastleWarm", new Vector3(0f, 3.8f, -10.9f), new Color(1f, .44f, .15f), 1.35f, 6.5f, true);
+        AddOmni("LeftTavernLantern", new Vector3(-10.5f, 6.8f, -9.6f), new Color(1f, .43f, .16f), 1.85f, 8.8f, true);
+        AddOmni("RightTavernLantern", new Vector3(10.2f, 7.0f, -9.9f), new Color(1f, .47f, .18f), 1.82f, 8.8f, true);
+        AddOmni("NearTableCandle", new Vector3(-10.0f, 2.0f, 6.0f), new Color(1f, .45f, .16f), 1.35f, 5.2f, true);
     }
 
     private void BuildCamera()
     {
-        // Locked against approved concept #1: intimate player-seat view with board dominating the frame.
+        // Slightly higher/back than the previous pass: foreground cards/reserves stay visible without shrinking the board.
         var camera = new Camera3D
         {
             Name = "PlayerCamera",
-            Position = new Vector3(0f, 7.35f, 13.65f),
-            Fov = 50.0f,
+            Position = new Vector3(0f, 8.55f, 15.10f),
+            Fov = 49.0f,
             Near = 0.08f,
             Far = 120f,
             Current = true
         };
         AddChild(camera);
-        camera.LookAt(new Vector3(0f, 1.46f, -4.70f), Vector3.Up);
+        camera.LookAt(new Vector3(0f, 1.42f, -4.72f), Vector3.Up);
     }
 
     private void BuildHud()
