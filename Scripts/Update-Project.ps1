@@ -25,7 +25,8 @@ if ($LASTEXITCODE -ne 0) {
 
 $assetScripts = @(
     (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_assets.py"),
-    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py")
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_detail_assets.py"),
+    (Join-Path $projectRoot "ArtSource\Blender\Scripts\generate_gameplay_assets.py")
 )
 
 $assetStamp = Join-Path $projectRoot ".assets-generated"
@@ -49,9 +50,14 @@ $expectedAssets = @(
     "Models\Units\Human\swordsman.glb",
     "Models\Units\Human\archer.glb",
     "Models\Units\Human\knight.glb",
+    "Models\Units\Human\king.glb",
+    "Models\Units\Human\royal_guard.glb",
+    "Models\Units\Human\wizard.glb",
+    "Models\Units\Human\assassin.glb",
     "Models\Units\Monsters\ogre.glb",
     "Models\Siege\Medieval\catapult.glb",
     "Models\Siege\Medieval\ballista.glb",
+    "Models\Siege\Medieval\trebuchet.glb",
     "Models\Props\Containers\barrel.glb",
     "Models\Props\Containers\crate.glb",
     "Models\Props\Decor\mug.glb",
@@ -62,6 +68,19 @@ $expectedAssets = @(
     "Models\Props\Decor\book_stack.glb",
     "Models\Props\Decor\skull.glb",
     "Models\Props\Decor\dice_cluster.glb",
+    "Models\Props\Gameplay\reinforcement_cart.glb",
+    "Models\Props\Gameplay\reinforcement_outpost.glb",
+    "Models\Props\Gameplay\trap_spikes.glb",
+    "Models\Props\Gameplay\castle_brazier.glb",
+    "Models\Props\Gameplay\throne.glb",
+    "Models\Props\Gameplay\spellbook_open.glb",
+    "Models\Props\Gameplay\mana_crystals.glb",
+    "Models\Props\Gameplay\suspicion_dial.glb",
+    "Models\Props\Gameplay\karma_medallion.glb",
+    "Models\Props\Gameplay\cheat_stash.glb",
+    "Models\Props\Gameplay\fireball_scorch.glb",
+    "Models\Props\Gameplay\healing_rune.glb",
+    "Models\Props\Gameplay\upgrade_totem.glb",
     "Models\Tavern\Furniture\shelf.glb",
     "Models\Tavern\Furniture\chair.glb",
     "Models\Tavern\Furniture\bench.glb",
@@ -151,5 +170,5 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host ""
 Write-Host "Castle Cards is up to date." -ForegroundColor Green
-Write-Host "C# build succeeded and the high-detail art library is current." -ForegroundColor Green
+Write-Host "C# build succeeded and all gameplay/detail assets are current." -ForegroundColor Green
 Write-Host "If Godot is open, let it import the GLB files and accept Reload from disk if prompted." -ForegroundColor Green
