@@ -44,8 +44,46 @@ function Ensure-PinnedRepo {
     }
 }
 
-# Both packs are CC0. Exact commits are pinned so a future upstream update cannot silently alter
-# Castle Cards' visual build.
+function Ensure-BlenderHumanBaseMeshes {
+    # Blender Studio's Human Base Meshes are CC0. We intentionally pin v1.2.0 because it is
+    # compatible with older Blender installations while still providing the realistic male base
+    # mesh we need for the hero opponent reboot.
+    $humanRoot = Join-Path $projectRoot ".asset-cache\blender-human-base"
+    $bundleRoot = Join-Path $humanRoot "bundle-v1.2.0"
+    $zipPath = Join-Path $humanRoot "human-base-meshes-bundle-v1.2.0.zip"
+    $url = "https://download.blender.org/demo/asset-bundles/human-base-meshes/human-base-meshes-bundle-v1.2.0.zip"
+
+    New-Item -ItemType Directory -Path $humanRoot -Force | Out-Null
+
+    $blendFiles = @()
+    if (Test-Path $bundleRoot) {
+        $blendFiles = @(Get-ChildItem -Path $bundleRoot -Filter *.blend -File -Recurse -ErrorAction SilentlyContinue)
+    }
+
+    if ($blendFiles.Count -eq 0) {
+        if (-not (Test-Path $zipPath)) {
+            Write-Host "Downloading Blender Studio CC0 Human Base Meshes v1.2.0..." -ForegroundColor DarkGray
+            Invoke-WebRequest -Uri $url -OutFile $zipPath -UseBasicParsing
+        }
+
+        if (Test-Path $bundleRoot) {
+            Remove-Item -Path $bundleRoot -Recurse -Force
+        }
+        New-Item -ItemType Directory -Path $bundleRoot -Force | Out-Null
+        Write-Host "Extracting Blender Studio Human Base Meshes..." -ForegroundColor DarkGray
+        Expand-Archive -Path $zipPath -DestinationPath $bundleRoot -Force
+        $blendFiles = @(Get-ChildItem -Path $bundleRoot -Filter *.blend -File -Recurse -ErrorAction SilentlyContinue)
+    }
+
+    if ($blendFiles.Count -eq 0) {
+        throw "Blender Human Base Meshes bundle did not contain a .blend file after extraction."
+    }
+
+    Write-Host "Blender Studio CC0 Human Base Meshes are ready." -ForegroundColor DarkGray
+}
+
+# KayKit remains useful for secondary/background pieces, but hero characters no longer use the
+# KayKit character as their visual foundation.
 Ensure-PinnedRepo `
     -Name "medieval" `
     -Url "https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0.git" `
@@ -55,6 +93,8 @@ Ensure-PinnedRepo `
     -Name "adventurers" `
     -Url "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0.git" `
     -Commit "672074b73ba276876a19e8816ecdc5241817ab47"
+
+Ensure-BlenderHumanBaseMeshes
 
 $required = @(
     ".asset-cache\kaykit\medieval\addons\kaykit_medieval_hexagon_pack\Assets\gltf\buildings\blue\building_castle_blue.gltf",
