@@ -33,6 +33,7 @@ jobs:
           ArtSource\Blender\Scripts\generate_reference_quality_v2.py
           ArtSource\Blender\Scripts\generate_opponent_hero_v3.py
           ArtSource\Blender\Scripts\generate_opponent_hero_v4.py
+          ArtSource\Blender\Scripts\prepare_opponent_real_base.py
           ArtSource\Blender\Scripts\generate_cinematic_material_pass.py
           ArtSource\Blender\Scripts\build_model_review_workspace.py
 
